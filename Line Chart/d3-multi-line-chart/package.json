@@ -1,0 +1,9 @@
+{
+  "name": "d3-multi-line-chart",
+  "main": "d3-multi-line-chart.js",
+  "version": "258.0.0",
+  "author": {
+    "name": "Mike Bostock",
+    "url": "https://beta.observablehq.com/@mbostock"
+  }
+}

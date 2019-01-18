@@ -1,0 +1,16 @@
+.xAxis line, .yAxis line {
+    fill: none;
+    stroke: rgba(0,0,0,.1);
+}
+
+.xAxis path, .yAxis path {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+    
+}
+
+.xAxis text, .yAxis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
