@@ -46,10 +46,28 @@ var svg2 = d3.select("body").append("svg")
     .attr("width", 400)
     .attr("height", 300);
 
-
-svg2.append("path")
+var area = svg2.append("path")
     .attr("d", areaPath(dataSet))
     .attr("stroke", "black");
+var areaText = svg2.append("text")
+    .attr("fill", "red")
+    .attr("display", "none");
+
+area.on("mousemove", function() {
+    var x = d3.mouse(this)[0];
+    var y = d3.mouse(this)[1];
+    
+    areaText.attr("display", null) //取消隱藏
+        .attr("x", x + 20)
+        .attr("y", y)
+        .text("[" + x + ", " + y + "]");
+})
+    .on("mouseout", function(){
+    areaText.attr("display", "none");
+})
+
+;
+
 
 
 var svg3 = d3.select("body").append("svg")
@@ -102,13 +120,44 @@ svg3.selectAll("text")
     return Math.floor((d.endAngle - d.startAngle) * 180 / Math.PI) + "°";
 });
 
+var test = d3.select("#test")
+    .on("click", function() {
+        d3.select(this).text("測試按鈕");
+    })
 
-
-
-
-
-
-
+var svg4 = d3.select("body").append("svg")
+	.attr("width", 500)
+  .attr("height", 500)
+  
+var drag = d3.drag()
+//	.origin(function(d,i){
+//  	return {x: d.cx, y: d.cy}
+//  })
+  .on("start", function(d){
+  	console.log("拖曳開始")
+  })
+  .on("end", function(d){
+  	console.log("拖曳結束")
+  })
+  .on("drag", function(d){
+  	d3.select(this)
+    	.attr("cx", d.cx = d3.event.x)
+      .attr("cy", d.cy = d3.event.y)
+  })  
+  
+  
+var circles = [{cx: 150, cy: 200, r: 30},
+	{cx: 250, cy: 200, r: 30}]
+  
+svg4.selectAll("circle")
+	.data(circles)
+  .enter()
+  .append("circle")
+  .attr("cx", function(d){ return d.cx })
+  .attr("cy", function(d){ return d.cy })
+  .attr("r", function(d){ return d.r })
+  .attr("fill", "steelblue")
+  .call(drag)
 
 
 
