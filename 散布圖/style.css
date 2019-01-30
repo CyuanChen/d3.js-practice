@@ -1,6 +1,6 @@
 .xAxis line, .yAxis line {
     fill: none;
-    stroke: rgba(0,0,0,.1);
+    stroke: rgba(0,0,0,0.1);
 }
 
 .xAxis path, .yAxis path {
