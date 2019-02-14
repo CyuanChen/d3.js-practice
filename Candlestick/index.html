@@ -6,19 +6,22 @@
     <style>
 
         body {
-            font: 10px sans-serif;
+            font: 15px sans-serif;
         }
 
         text {
             fill: #000;
         }
+        
 
+/*
         button {
             position: absolute;
             right: 20px;
             top: 440px;
             display: none;
         }
+*/
 
         path.candle {
             stroke: #000000;
@@ -29,25 +32,41 @@
         }
 
         path.candle.up {
-            fill: #00AA00;
-            stroke: #00AA00;
+            fill: #FF0000;
+            stroke: #FF0000;
         }
 
         path.candle.down {
-            fill: #FF0000;
-            stroke: #FF0000;
+            fill: #00AA00;
+            stroke: #00AA00;
+        }
+        
+        .ma-0 path.line {
+            stroke: #1f77b4;
+            fill: none;
+            stroke-width: 2;
+        }
+        .ma-1 path.line {
+            stroke: #aec7e8;
+            fill: none;
+            stroke-width: 2;
+        }
+        .ma-2 path.line {
+            stroke: #ff7f0e;
+            fill: none;
+            stroke-width: 2;
         }
 
     </style>
     </head>
     <body>
-        <br>
-        <br>
         <button onclick="history.back()">Back</button>
-        <br>
         <p>個股資訊： 亞泥</p>
         <p>K線圖</p>
         <p>時間：2018/11/07 ~ 2019/01/30</p>
+        <p>深藍線: 5MA</p>
+        <p>淺藍線: 20MA</p>
+        <p>橘線：  60MA</p>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="techanjs.js"></script>
     <script type="text/javascript" src="app.js"></script>
