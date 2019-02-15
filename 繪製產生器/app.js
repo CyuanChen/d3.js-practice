@@ -75,12 +75,12 @@ var svg3 = d3.select("body").append("svg")
     .attr("height", 800);
 
 
-var dataSet2 = [{ startAngle: 0, endAngle: Math.PI * 0.6},
-       {
-   startAngle: Math.PI * 0.6, endAngle: Math.PI * 1}, {startAngle: Math.PI , endAngle: Math.PI * 1.7},{startAngle: Math.PI *1.7, endAngle: Math.PI * 2}];
-var arcPath = d3.arc()
-    .innerRadius(80)
-    .outerRadius(100);
+//var dataSet2 = [{ startAngle: 0, endAngle: Math.PI * 0.6},
+//       {
+//   startAngle: Math.PI * 0.6, endAngle: Math.PI * 1}, {startAngle: Math.PI , endAngle: Math.PI * 1.7},{startAngle: Math.PI *1.7, endAngle: Math.PI * 2}];
+//var arcPath = d3.arc()
+//    .innerRadius(80)
+//    .outerRadius(100);
 
 //svg3.append("path")
 //    .data(dataSet2)
