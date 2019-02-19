@@ -25,7 +25,7 @@ path.candle.down {
 }
 
 path.volume {
-    opacity: 0.8;
+/*    opacity: 0.8;*/
     fill: #DDDDDD;
 }
 
@@ -43,6 +43,16 @@ path.volume {
     stroke: #ff7f0e;
     fill: none;
     stroke-width: 2;
+}
+
+.x.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+}
+
+.y.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
 }
 
 .crosshair {

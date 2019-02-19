@@ -58,13 +58,19 @@ var crosshair = techan.plot.crosshair()
         .on("enter", enter)
         .on("out", out)
         .on("move", move);
-
+var textSvg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var svg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
 
 d3.json("data.json", function(error, data) {
     var accessor = candlestick.accessor();
@@ -83,6 +89,7 @@ d3.json("data.json", function(error, data) {
             volume: +d[9]
         };
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
+    
 
     svg.append("g")
             .attr("class", "candlestick");
@@ -113,7 +120,11 @@ d3.json("data.json", function(error, data) {
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Price ($)");
-
+    
+    textSvg.selectAll(".text")
+        .append("text")
+        .attr("class", "text")
+        .text("Wwwww");
     // Data to display initially
     draw(data.slice(0, data.length));
     // Only want this button to be active if the data has loaded
@@ -121,8 +132,14 @@ d3.json("data.json", function(error, data) {
 });
 
 function draw(data) {
+    
+    
+    
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
+    
+     svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     yVolume.domain(techan.scale.plot.volume(data).domain());
     svg.select("g.volume").datum(data).call(volume);
     svg.selectAll("g.candlestick").datum(data).call(candlestick);
@@ -132,8 +149,8 @@ function draw(data) {
     svg.select("g.ema.ma-2").datum(techan.indicator.sma().period(50)(data)).call(sma0);
 
 
-    svg.selectAll("g.x.axis").call(xAxis.tickFormat(d3.timeFormat("%m/%d")));
-    svg.selectAll("g.y.axis").call(yAxis);
+   
+   
     svg.select("g.volume.axis").call(volumeAxis);
     
       svg.append("g")
