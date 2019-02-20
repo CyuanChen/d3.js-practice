@@ -6,12 +6,14 @@ var parseDate = d3.timeParse("%Y%m%d");
 
 var x = techan.scale.financetime()
         .range([0, width]);
-
-var y = d3.scaleLinear()
+var crosshairY = d3.scaleLinear()
         .range([height, 0]);
 
+var y = d3.scaleLinear()
+        .range([height - 60, 0]);
+
 var yVolume = d3.scaleLinear()
-        .range([y(0), y(0.12)]);
+        .range([height , height - 60]);
 
 
 var sma0 = techan.plot.sma()
@@ -56,7 +58,7 @@ var timeAnnotation = techan.plot.axisannotation()
 
 var crosshair = techan.plot.crosshair()
         .xScale(x)
-        .yScale(y)
+        .yScale(crosshairY)
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
 
@@ -76,7 +78,7 @@ var svgText = textSvg.append("g")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "start")
-            .text("Price ($)");
+            .text("");
 
 var svg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -84,11 +86,11 @@ var svg = d3.select("body").append("svg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var coordsText = svg.append('text')
-        .style("text-anchor", "end")
-        .attr("class", "coords")
-        .attr("x", width - 5)
-        .attr("y", 15);
+//var coordsText = svg.append('text')
+//        .style("text-anchor", "end")
+//        .attr("class", "coords")
+//        .attr("x", width - 5)
+//        .attr("y", 15);
 var dataArr;
 
 d3.json("data.json", function(error, data) {
@@ -197,16 +199,16 @@ function test(d) {
 }
 
 function enter() {
-    coordsText.style("display", "inline");
+//    coordsText.style("display", "inline");
 }
 
 function out() {
-    coordsText.style("display", "none");
+//    coordsText.style("display", "none");
 }
 
 function move(coords, index) {
-//    console.log(coords.x + "," + coords)
-    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
+//    console.log(coords.x + "," + coords.y)
+//    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
     
     var i;
     for (i = 0; i < dataArr.length; i ++) {
