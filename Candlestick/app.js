@@ -13,19 +13,21 @@ var y = d3.scaleLinear()
 var yVolume = d3.scaleLinear()
         .range([y(0), y(0.12)]);
 
-var candlestick = techan.plot.candlestick()
-        .xScale(x)
-        .yScale(y);
 
 var sma0 = techan.plot.sma()
         .xScale(x)
         .yScale(y);
+
 var sma1 = techan.plot.sma()
         .xScale(x)
         .yScale(y);
 var ema2 = techan.plot.ema()
         .xScale(x)
         .yScale(y);
+var candlestick = techan.plot.candlestick()
+        .xScale(x)
+        .yScale(y);
+
 
 var volume = techan.plot.volume()
         .accessor(candlestick.accessor())
@@ -50,11 +52,14 @@ var timeAnnotation = techan.plot.axisannotation()
 //        .width(65)
         .translate([0, height]);
 
+
+
 var crosshair = techan.plot.crosshair()
         .xScale(x)
         .yScale(y)
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
+
         .on("enter", enter)
         .on("out", out)
         .on("move", move);
@@ -64,18 +69,32 @@ var textSvg = d3.select("body").append("svg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+var svgText = textSvg.append("g")
+            .attr("class", "description")
+            .append("text")
+//            .attr("x", margin.left)
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "start")
+            .text("Price ($)");
+
 var svg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
+var coordsText = svg.append('text')
+        .style("text-anchor", "end")
+        .attr("class", "coords")
+        .attr("x", width - 5)
+        .attr("y", 15);
+var dataArr;
 
 d3.json("data.json", function(error, data) {
     var accessor = candlestick.accessor();
     var jsonData = data["Data"];
-    console.log(jsonData);
+//    console.log(jsonData);
     data = 
         jsonData
 //            .slice(0, 200)
@@ -86,14 +105,19 @@ d3.json("data.json", function(error, data) {
             high: +d[4],
             low: +d[5],
             close: +d[6],
-            volume: +d[9]
+            volume: +d[9],
+            change: +d[7],
+            percentChange: +d[8],
+            fiveMA: +d[10],
+            twentyMA: +d[11],
+            sixtyMA: +d[12]
         };
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
-
+    
+        
     svg.append("g")
             .attr("class", "candlestick");
-
     svg.append("g")
             .attr("class", "sma ma-0");
     svg.append("g")
@@ -121,10 +145,7 @@ d3.json("data.json", function(error, data) {
             .style("text-anchor", "end")
             .text("Price ($)");
     
-    textSvg.selectAll(".text")
-        .append("text")
-        .attr("class", "text")
-        .text("Wwwww");
+    
     // Data to display initially
     draw(data.slice(0, data.length));
     // Only want this button to be active if the data has loaded
@@ -132,9 +153,6 @@ d3.json("data.json", function(error, data) {
 });
 
 function draw(data) {
-    
-    
-    
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     
@@ -142,35 +160,60 @@ function draw(data) {
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     yVolume.domain(techan.scale.plot.volume(data).domain());
     svg.select("g.volume").datum(data).call(volume);
-    svg.selectAll("g.candlestick").datum(data).call(candlestick);
-
+    var state = svg.selectAll("g.candlestick").datum(data);
+    state.call(candlestick)
+//        .on("enter", function(d) { test(d);})
+        .on("move", move)
+//        .on("mouseover", test);
+        .each(function(d) {
+        dataArr = d;
+    });
+    state
+        .on("mouseover", function(d, i) {
+        svgText.text("hahahah");
+        stock = d;
+        console.log("d: " + d[i].date + "i: " + i);
+        
+            
+    })
+    
+    
     svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
     svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma0);
     svg.select("g.ema.ma-2").datum(techan.indicator.sma().period(50)(data)).call(sma0);
 
-
-   
-   
     svg.select("g.volume.axis").call(volumeAxis);
     
       svg.append("g")
             .attr("class", "crosshair")
             .datum({ x: x.domain()[80], y: 67.5})
             .call(crosshair)
-            .each(function(d) {move(d);});
+            .each(function(d,i) {move(d,i);});
+    
 }
 
+function test(d) {
+    console.log("ga " + d);
+}
 
 function enter() {
-    
+    coordsText.style("display", "inline");
 }
 
 function out() {
-    
+    coordsText.style("display", "none");
 }
 
-function move(coords) {
+function move(coords, index) {
+//    console.log(coords.x + "," + coords)
+    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
     
+    var i;
+    for (i = 0; i < dataArr.length; i ++) {
+        if (coords.x === dataArr[i].date) {
+            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ",成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
+        }
+    }
 }
 
 
