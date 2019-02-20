@@ -155,13 +155,26 @@ d3.json("data.json", function(error, data) {
 });
 
 function draw(data) {
+   console.log(data); 
+//    console.log(data.map(function(d){ return d.date}));
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     
      svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     yVolume.domain(techan.scale.plot.volume(data).domain());
-    svg.select("g.volume").datum(data).call(volume);
+    var volumeData = data.map(function(d){return d.volume;});
+//    console.log(volumeData);
+   var volumeBar =   svg.select("g.volume").datum(data);
+    
+//    volumeBar.style('fill', function(d, i) { 
+//        console.log(volumeBar.d);
+//        return '#DDDDDD'
+//    });
+    volumeBar.call(volume);
+    
+    
+    
     var state = svg.selectAll("g.candlestick").datum(data);
     state.call(candlestick)
 //        .on("enter", function(d) { test(d);})
@@ -173,7 +186,6 @@ function draw(data) {
     state
         .on("mouseover", function(d, i) {
         svgText.text("hahahah");
-        stock = d;
         console.log("d: " + d[i].date + "i: " + i);
         
             
@@ -213,7 +225,7 @@ function move(coords, index) {
     var i;
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
-            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ",成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
+            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
         }
     }
 }

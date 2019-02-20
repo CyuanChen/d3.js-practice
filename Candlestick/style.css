@@ -26,7 +26,19 @@ path.candle.down {
 
 path.volume {
 /*    opacity: 0.8;*/
-    fill: #DDDDDD;
+/*    fill: #DDDDDD;*/
+}
+
+path.volume.up {
+    fill: #FF0000;
+}
+
+path.volume.down {
+    fill: #00AA00;
+}
+
+path.volume.equal {
+    fill: #FF0000;
 }
 
 .ma-0 path.line {
