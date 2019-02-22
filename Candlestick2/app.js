@@ -15,11 +15,6 @@ var y = d3.scaleLinear()
 var yVolume = d3.scaleLinear()
         .range([height , height - 60]);
 
-//var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.1);
-var xScale = d3.scaleBand().range([0, width]).padding(0.1);
-//var yScale = d3.scaleLinear().rangeRound([height, height - 20]);
-var yScale = d3.scaleLinear().rangeRound([height, height - 22]);
-
 
 var sma0 = techan.plot.sma()
         .xScale(x)
@@ -35,8 +30,9 @@ var candlestick = techan.plot.candlestick()
         .xScale(x)
         .yScale(y);
 
+
 var volume = techan.plot.volume()
-//        .accessor(candlestick.accessor())
+        .accessor(candlestick.accessor())
         .xScale(x)
         .yScale(yVolume);
 var xAxis = d3.axisBottom()
@@ -57,6 +53,8 @@ var timeAnnotation = techan.plot.axisannotation()
         .format(d3.timeFormat('%Y-%m-%d'))
 //        .width(65)
         .translate([0, height]);
+
+
 
 var crosshair = techan.plot.crosshair()
         .xScale(x)
@@ -88,6 +86,11 @@ var svg = d3.select("body").append("svg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+//var coordsText = svg.append('text')
+//        .style("text-anchor", "end")
+//        .attr("class", "coords")
+//        .attr("x", width - 5)
+//        .attr("y", 15);
 var dataArr;
 
 d3.json("data.json", function(error, data) {
@@ -114,12 +117,6 @@ d3.json("data.json", function(error, data) {
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
     
-    var newData = jsonData.map(function(d) {
-        return {
-            date: parseDate(d[0]),
-            volume: d[9]
-        }
-    }).reverse();
         
     svg.append("g")
             .attr("class", "candlestick");
@@ -129,10 +126,14 @@ d3.json("data.json", function(error, data) {
             .attr("class", "sma ma-1");
     svg.append("g")
             .attr("class", "ema ma-2");
-//    svg.append("g")
-//            .attr("class", "volume");
+    svg.append("g")
+            .attr("class", "volume");
+  
+    
     svg.append("g")
             .attr("class", "volume axis");
+    
+
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")");
@@ -148,69 +149,36 @@ d3.json("data.json", function(error, data) {
     
     
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
+    draw(data.slice(0, data.length));
     // Only want this button to be active if the data has loaded
     d3.select("button").on("click", function() { draw(data); }).style("display", "inline");
 });
 
-function draw(data, volumeData) {
+function draw(data) {
+   console.log(data); 
 //    console.log(data.map(function(d){ return d.date}));
-    console.log(volumeData);
-    console.log(data[0]);
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
-    
-    xScale.domain(volumeData.map(function(d){return d.date;}))
-    yScale.domain([0, d3.max(volumeData, function(d) {return d.volume;})]);
-    
-    
-    var chart = svg.selectAll("volumeBar")
-        .data(volumeData)
-        .enter().append("g");
-    chart.append("rect")
-        .attr("class", "volumeBar")
-        .attr("x", function(d) {return xScale(d.date)})
-        .attr("height", function(d){ return height - yScale(d.volume);})
-        .attr("y", function(d) {return yScale(d.volume);})
-        .attr("width", xScale.bandwidth())
-        .style("fill", function(d, i) {
-//            console.log(d + ", " + i);
-            if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
-                return "#00AA00"
-            } else {
-               return "#DDDDDD" 
-            }
-            
-    });
-    
-    
-        
-    
     
      svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     yVolume.domain(techan.scale.plot.volume(data).domain());
-//    yVolume.domain([0, d3.max(volumeData,function(d){return d.volume;})]);
-    
-//    var volumeData = data.map(function(d){return d.volume;});
-
-    
-    svg.append("g")
-        .attr("class", "crosshair")
+    var volumeData = data.map(function(d){return d.volume;});
+//    console.log(volumeData);
+          svg.append("g")
+            .attr("class", "crosshair")
 //            .datum({ x: x.domain()[80], y: 67.5})
-        .call(crosshair)
+            .call(crosshair)
+//            .each(function(d,i) {move(d,i);});
     
-    
-    
-//    
-//   var volumeBar =   svg.select("g.volume").datum(data);
-//    volumeBar.on("mouseover", handleMouseOver);
+   var volumeBar =   svg.select("g.volume").datum(data);
+    volumeBar.on("mouseover", handleMouseOver);
     
 //    volumeBar.style('fill', function(d, i) { 
 //        console.log(volumeBar.d);
 //        return '#DDDDDD'
 //    });
-//    volumeBar.call(volume);
+    volumeBar.call(volume);
     
     
     

@@ -119,8 +119,8 @@ function drawBar(data) {
     chart.append("rect")
         .attr("class", "bar")
         .attr("x", function(d){return xScale(d.date);})
-        .attr("height", function(d){return height - yScale(d.price);})
-        .attr("y", function(d){return yScale(d.price);})
+        .attr("height", function(d){return height - y2(d.price);})
+        .attr("y", function(d){return y2(d.price);})
         .attr("width", xScale.bandwidth());
     
     // Add the Y2 Axis
@@ -155,7 +155,7 @@ var mapDate = [];
 d3.json("data.json",function(error, data) {
   if (error) throw error;
     var jsonData = data["Data"];
-  
+    
     console.log(jsonData);
     var newData = jsonData.map(function(d) {
         return {

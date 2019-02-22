@@ -24,11 +24,12 @@ path.candle.down {
     stroke: #00AA00;
 }
 
-.volumeBar {
-    opacity: 0.8;
-    fill: #00AA00;
+path.volume {
+/*    opacity: 0.8;*/
+    fill: #DDDDDD;
 }
 
+/*
 path.volume.up {
     fill: #FF0000;
 }
@@ -40,6 +41,7 @@ path.volume.down {
 path.volume.equal {
     fill: #FF0000;
 }
+*/
 
 .ma-0 path.line {
     stroke: #1f77b4;
