@@ -16,9 +16,7 @@ var y = d3.scaleLinear()
 var yVolume = d3.scaleLinear()
         .range([height , height - 60]);
 
-//var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.1);
 var xScale = d3.scaleBand().range([0, width]).padding(0.1);
-//var yScale = d3.scaleLinear().rangeRound([height, height - 20]);
 var yScale = d3.scaleLinear().rangeRound([height, height - 22]);
 var monthYScale = d3.scaleLinear().rangeRound([height, height - 15])
 
@@ -46,7 +44,7 @@ var xAxis = d3.axisBottom()
 
 var yAxis = d3.axisLeft()
         .scale(y);
-var volumeAxis = d3.axisRight(yVolume)
+var volumeAxis = d3.axisLeft(yVolume)
         .ticks(3)
         .tickFormat(d3.format(",.3s"));
 var ohlcAnnotation = techan.plot.axisannotation()
@@ -65,7 +63,6 @@ var crosshair = techan.plot.crosshair()
         .yScale(crosshairY)
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
-
         .on("enter", enter)
         .on("out", out)
         .on("move", move);
@@ -92,7 +89,7 @@ var svg = d3.select("body").append("svg")
 
 var dataArr;
 var fileName;
-loadJSON2("monthData.json");
+loadJSON("data.json");
 
 function loadJSON(file) {
     fileName = file;
