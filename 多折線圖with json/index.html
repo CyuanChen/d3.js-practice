@@ -13,6 +13,9 @@
     border-radius: 6px;
     fill: rgba(0,108,184, 0.8);
   }
+    .axis line {
+        stroke: #00AA00;
+    }
 </style>
 <body>
     <button onclick="javascript:location.href='../index.html'">Back</button>
@@ -22,6 +25,9 @@
     <p>折線圖：股價</p>
     <p>長條圖：月營收</p>
 
+    
+    <button onclick='loadJSON()'>月營收</button>
+    <button onclick="loadRateJSON();">月營收年增率</button>
 <!-- load the d3.js library -->    	
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
@@ -41,11 +47,10 @@ var x = d3.scaleTime().range([0, width]);
 var y = d3.scaleLinear().range([height, 0]);
 var x2 = d3.scaleTime().range([0, width]);
 var y2 = d3.scaleLinear().range([height, 0]);
-    
-    
-    
+  
 var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.4);
 var yScale = d3.scaleLinear().rangeRound([height, 0]);
+  
 // define the line
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
@@ -57,18 +62,14 @@ var svg = d3.select("body").append("svg")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 var theData = undefined;
+    loadRateJSON();
+//loadJSON();
+
 
 function draw(data) {
     theData = data;
-
     data = data.reverse();
     console.log(data);
-      // format the data
-    data.forEach(function(d){
-        d.date = d.date;
-        d.earn = +d.earn;
-    })
-    
 //    xScale.domain(d3.extent(data, function(d) { 
 //    return d.date; }));
     yScale.domain([0, d3.max(data, function(d) {
@@ -77,8 +78,7 @@ function draw(data) {
     return d.date; }));
     y.domain([0, d3.max(data, function(d) {
 	  return d.earn; })]);
-    
-    
+
     var line = d3.line()
     .x(function(d) {return xScale(d.date) + xScale.bandwidth() / 2;})
     .y(function(d) {return yScale(d.earn);})
@@ -91,6 +91,7 @@ function draw(data) {
         .attr("stroke-width", 2.5)
 //        .attr("transform", "translate(" + (xScale.bandwidth() / 2) + ",0)")
         .attr("d", line);
+    
   // Add the X Axis
   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -103,12 +104,14 @@ function draw(data) {
   }
     
 function drawBar(data) {
+    svg.selectAll("*").remove();
     data.reverse();
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
     y2.domain([0, d3.max(data, function(d) {
         return d.price;
     })]);
+//    y2.domain(d3.extent(data, function(d) {return d.price;}))
     console.log(data);
     xScale.domain(data.map(function(d){return d.date;}));
     yScale.domain([0, d3.max(data, function(d) {return d.price;})]);
@@ -128,7 +131,48 @@ function drawBar(data) {
         .call(d3.axisLeft(y2));
     
 }
+
+function drawBar2(data) {
+    data.reverse();
+    console.log(data);
+    console.log(d3.extent(data, function(d){return d.revenue}))
+    console.log(d3.max(data, function(d) {return d.revenue}))
+    x2.domain(d3.extent(data, function(d) { 
+    return d.date; }));
+    y2.domain([-50, 75]);
+//    y2.domain(d3.extent(data, function(d){ return d.revenue;})).nice();
+    console.log(data.map(function(d) {return d.revenue}));
+    console.log(data);
+    xScale.domain(data.map(function(d){return d.date;}));
     
+    
+    var chart = svg.selectAll("bar")
+        .data(data)
+        .enter().append("g");
+    
+    chart.append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d){return xScale(d.date);})
+        .attr("height", function(d){return Math.abs(y2(d.revenue) - y2(0));})
+        .attr("y", function(d){
+            if (d.revenue > 0) {
+                return y2(d.revenue);
+            } else {
+                return y2(0);
+            }
+    })
+        .attr("width", xScale.bandwidth());
+    
+    // Add the Y2 Axis
+    svg.append("g")
+        .call(d3.axisLeft(y2));
+    svg.append("g")
+        .attr("class", "x axis")
+        .append("line")
+        .attr("y1", y2(0))
+        .attr("y2", y2(0))
+        .attr("x2", width);
+}
     
     
     
@@ -137,7 +181,8 @@ var monthEarn = {date: [], earn: []};
 var stock = {date:[], price: [], earn: []};
 var mapDate = [];
     
-    
+function loadJSON() {
+    svg.selectAll("*").remove();  
     d3.json("stock.json", function(error, data) {
     var jsonData = data["Data"];
     console.log(jsonData);
@@ -145,11 +190,51 @@ var mapDate = [];
     var newData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
-            price: d[6]
+            price: +d[6]
         };
     });
     console.log(newData);
     drawBar(newData);
+//        draw(newData);
+    
+}) 
+    
+d3.json("data.json",function(error, data) {
+    
+  if (error) throw error;
+    var jsonData = data["Data"];
+    
+    console.log(jsonData);
+    var newData = jsonData.map(function(d) {
+        return {
+            date: parseTime(d[0]),
+            earn: +d[5]
+        };
+    });
+    console.log(newData);
+    // trigger render
+    draw(newData);
+//    drawBar(newData);
+    
+    
+});
+}
+    
+function loadRateJSON() {
+    svg.selectAll("*").remove();
+     d3.json("stock.json", function(error, data) {
+    var jsonData = data["Data"];
+    console.log(jsonData);
+        
+    var newData = jsonData.map(function(d) {
+        return {
+            date: parseTime(d[0]),
+//            price: d[6]
+        };
+    });
+    console.log(newData);
+//    drawBar(newData);
+    
 }) 
     
 d3.json("data.json",function(error, data) {
@@ -163,11 +248,19 @@ d3.json("data.json",function(error, data) {
             earn: d[5]
         };
     });
-    
+    var newData2 = jsonData.map(function(d) {
+        return {
+            date: parseTime(d[0]),
+            revenue: +d[7]
+        }
+    })
+    drawBar2(newData2);
     console.log(newData);
     // trigger render
     draw(newData);
 });
+}
+    
     
 
     
