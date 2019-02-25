@@ -14,10 +14,43 @@ var x = d3.scaleTime().range([0, width]);
 var y = d3.scaleLinear().range([height, 0]);
 var x2 = d3.scaleTime().range([0, width]);
 var y2 = d3.scaleLinear().range([height, 0]);
-  
+var x3 = techan.scale.financetime()
+        .range([0, width]);
+var candlestick = techan.plot.candlestick()
+        .xScale(x3)
+        .yScale(y);
+
+
+
+
 var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.4);
 var yScale = d3.scaleLinear().rangeRound([height, 0]);
-  
+
+var xAxis = d3.axisBottom()
+            .scale(x3);
+var yAxis = d3.axisLeft()
+            .scale(y);
+
+var ohlcAnnotation = techan.plot.axisannotation()
+        .axis(xAxis)
+        .orient('left')
+        .format(d3.format(',.2f'));
+
+var timeAnnotation = techan.plot.axisannotation()
+        .axis(yAxis)
+        .orient('bottom')
+        .format(d3.timeFormat('%Y%m'))
+        .width(20)
+        .translate([0, height]);
+
+var crosshair = techan.plot.crosshair()
+        .xScale(x)
+        .yScale(y)
+//        .xAnnotation(timeAnnotation)
+//        .yAnnotation(ohlcAnnotation)
+        .on("move", move);
+
+
 // define the line
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
@@ -33,20 +66,32 @@ var theData = undefined;
 loadJSON();
 
 
-function draw(data) {
-    theData = data;
+function draw(data, origindata) {
+    var accessor = candlestick.accessor();
+    
     data = data.reverse();
-    console.log(data);
+    origindata = origindata.reverse();
+    
+    origindata = origindata.map(function(d) {
+        return {
+            date: parseTime(d[0]),
+            open: +d[3],
+            high: +d[4],
+            low: +d[5],
+            close: +d[6],
+            volume: +d[10]
+      }                          
+  })
+//    console.log(origindata);
+    x3.domain(origindata.map(accessor.d));
 //    xScale.domain(d3.extent(data, function(d) { 
 //    return d.date; }));
-    
+    xScale.domain(data.map(function(d){return d.date;}));
     yScale.domain([d3.min(data, function(d){return d.price - 5;}), d3.max(data, function(d){ return d.price + 5;})])
-//    yScale.domain([0, d3.max(data, function(d) {
-//	  return d.price; })]);
     x.domain(d3.extent(data, function(d) { 
     return d.date; }));
-    y.domain([0, d3.max(data, function(d) {
-	  return d.price; })]);
+    y.domain([d3.min(data, function(d){return d.price - 5;}), d3.max(data, function(d){ return d.price + 5;})])
+//    y.domain([0, d3.max(data, function(d) {return d.price; })]);
 
     var line = d3.line()
     .x(function(d) {return xScale(d.date) + xScale.bandwidth() / 2;})
@@ -62,20 +107,26 @@ function draw(data) {
         .attr("d", line);
     
 
-
-  // Add the Y Axis
-  svg.append("g")
-        .call(d3.axisLeft(yScale).ticks(5));
+  
+    svg.append("g")
+    .call(yAxis.ticks(5));
+//        .call(d3.axisLeft(yScale).ticks(5));
+   
+    svg.append("g")
+        .attr("class", "crosshair")
+        .call(crosshair)
   }
     
 function drawBar(data) {
     svg.selectAll("*").remove();
     data.reverse();
+    x.domain(d3.extent(data, function(d) { 
+    return d.date; }));
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
     y2.domain([d3.min(data, function(d) {return d.earn -500000;}), d3.max(data, function(d) {return d.earn + 500000;})]);
 //    y2.domain(d3.extent(data, function(d) {return d.price;}))
-    console.log(data);
+//    console.log(data);
     xScale.domain(data.map(function(d){return d.date;}));
     yScale.domain([d3.min(data, function(d) {return d.earn -5;}), d3.max(data, function(d) {return d.earn + 5;})]);
     
@@ -90,10 +141,12 @@ function drawBar(data) {
         .attr("width", xScale.bandwidth());
     
       // Add the X Axis
-    svg.append("g")
+      svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xScale).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+//        .call(xAxis.ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+    
+        .call(d3.axisBottom(xScale).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
     
     // Add the Y2 Axis
     svg.append("g")
@@ -105,15 +158,11 @@ function drawBar(data) {
 
 function drawBar2(data) {
     data.reverse();
-    console.log(data);
-    console.log(d3.extent(data, function(d){return d.revenue}))
-    console.log(d3.max(data, function(d) {return d.revenue}))
+//    console.log(data);
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
     y2.domain([-50, 75]);
 //    y2.domain(d3.extent(data, function(d){ return d.revenue;})).nice();
-    console.log(data.map(function(d) {return d.revenue}));
-//    console.log(data);
     xScale.domain(data.map(function(d){return d.date;}));
     
      svg.append("g")
@@ -169,14 +218,14 @@ function loadJSON() {
     if (error) throw error;
     var jsonData = data["Data"];
     
-    console.log(jsonData);
+//    console.log(jsonData);
     var newData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
             earn: +d[5]
         };
     });
-    console.log(newData);
+//    console.log(newData);
     // trigger render
 //    draw(newData);
     drawBar(newData);
@@ -184,7 +233,7 @@ function loadJSON() {
     
     d3.json("stock.json", function(error, data) {
     var jsonData = data["Data"];
-    console.log(jsonData);
+//    console.log(jsonData);
         
     var newData = jsonData.map(function(d) {
         return {
@@ -192,9 +241,9 @@ function loadJSON() {
             price: +d[6]
         };
     });
-    console.log(newData);
+//    console.log(newData);
 //    drawBar(newData);
-        draw(newData);
+    draw(newData, jsonData);
     
 }) 
     
@@ -228,7 +277,7 @@ function loadRateJSON() {
 });
      d3.json("stock.json", function(error, data) {
     var jsonData = data["Data"];
-    console.log(jsonData);
+//    console.log(jsonData);
         
     var newData = jsonData.map(function(d) {
         return {
@@ -236,9 +285,9 @@ function loadRateJSON() {
             price: +d[6]
         };
     });
-    console.log(newData);
+//    console.log(newData);
 //    drawBar(newData);
-    draw(newData);
+    draw(newData, jsonData);
     
 })  
     
@@ -246,16 +295,17 @@ function loadRateJSON() {
 
 }
     
+ function move(coords, index) {
+//    console.log(coords.x + "," + coords.y)
     
+    var i;
+//    for (i = 0; i < dataArr.length; i ++) {
+//        if (coords.x === dataArr[i].date) {
+//            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + ", 成交量：" + dataArr[i].volume); 
+//                         + "(" + dataArr[i].percentChange + "%)" + ", 成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
+//        }
+//    }
+}   
 
-    
-    
-    
-
-//var originJson = undefined;
-//d3.json("origin.json", function(error, data) {
-//    originJson = data;
-////    draw(data, "Afghanistan")
-//})
 
     
