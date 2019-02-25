@@ -1,0 +1,26 @@
+.line {
+  fill: none;
+  stroke: #ff0000;
+  stroke-width: 2px;
+}
+    
+.bar {
+    border: 1px solid #0b3536;
+    border-radius: 6px;
+    fill: rgba(0,108,184, 0.8);  
+}
+
+.axis line {
+    stroke: #000;
+}
+
+.x.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+}
+
+.y.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+}
+
