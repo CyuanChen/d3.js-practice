@@ -17,9 +17,6 @@ var yVolume = d3.scaleLinear()
         .range([height , height - 60]);
 
 var xScale = d3.scaleBand().range([0, width]).padding(0.1);
-var yScale = d3.scaleLinear().rangeRound([height, height - 22]);
-var monthYScale = d3.scaleLinear().rangeRound([height, height - 15])
-
 
 var sma0 = techan.plot.sma()
         .xScale(x)
@@ -225,15 +222,13 @@ function loadJSON2(file) {
 }
 
 function draw(data, volumeData, type) {
-//    console.log(data.map(function(d){ return d.date}));
-//    console.log(volumeData);
-//    console.log(data[0]);
+
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     
     xScale.domain(volumeData.map(function(d){return d.date;}))
-    yScale.domain([0, d3.max(volumeData, function(d) {return d.volume;})]);
-    monthYScale.domain([0, d3.max(volumeData, function(d) {return d.volume;})]);
+    yVolume.domain(techan.scale.plot.volume(data).domain());
+
     
     var chart = svg.selectAll("volumeBar")
         .data(volumeData)
@@ -242,18 +237,10 @@ function draw(data, volumeData, type) {
         .attr("class", "volumeBar")
         .attr("x", function(d) {return xScale(d.date)})
         .attr("height", function(d){
-            if (type == "date") {
-                return height - yScale(d.volume);
-            } else {
-                return height - monthYScale(d.volume);
-            }
+            return  height - yVolume(d.volume);
         })
         .attr("y", function(d) {
-            if (type == "date") {
-                 return yScale(d.volume);
-            } else {
-                return monthYScale(d.volume);
-            }
+            return yVolume(d.volume);
         })
         .attr("width", xScale.bandwidth())
         .style("fill", function(d, i) {
@@ -267,7 +254,7 @@ function draw(data, volumeData, type) {
     });
   svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
-    yVolume.domain(techan.scale.plot.volume(data).domain());   
+      
     svg.append("g")
         .attr("class", "crosshair")
 //            .datum({ x: x.domain()[80], y: 67.5})
