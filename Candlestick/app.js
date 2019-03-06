@@ -1,4 +1,4 @@
-var margin = {top: 20, right: 50, bottom: 30, left: 50},
+var margin = {top: 20, right: 50, bottom: 30, left: 60},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -45,7 +45,7 @@ var xAxis = d3.axisBottom()
 var yAxis = d3.axisLeft()
         .scale(y);
 var volumeAxis = d3.axisLeft(yVolume)
-        .ticks(3)
+        .ticks(4)
         .tickFormat(d3.format(",.3s"));
 var ohlcAnnotation = techan.plot.axisannotation()
         .axis(yAxis)
@@ -152,7 +152,7 @@ function loadJSON(file) {
     
     
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
+    draw(data.slice(0, data.length), newData, "date");
     // Only want this button to be active if the data has loaded
     d3.select("button").on("click", function() { draw(data); }).style("display", "inline");
 });
@@ -163,7 +163,7 @@ function loadJSON2(file) {
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
     var jsonData = data["Data"];
-    console.log(jsonData);
+//    console.log(jsonData);
     data = 
         jsonData
 //            .slice(0, 200)
@@ -218,16 +218,16 @@ function loadJSON2(file) {
     
     
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
+    draw(data.slice(0, data.length), newData, "month");
     // Only want this button to be active if the data has loaded
     d3.select("button").on("click", function() { draw(data); }).style("display", "inline");
 });
 }
 
-function draw(data, volumeData) {
+function draw(data, volumeData, type) {
 //    console.log(data.map(function(d){ return d.date}));
-    console.log(volumeData);
-    console.log(data[0]);
+//    console.log(volumeData);
+//    console.log(data[0]);
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     
@@ -242,14 +242,14 @@ function draw(data, volumeData) {
         .attr("class", "volumeBar")
         .attr("x", function(d) {return xScale(d.date)})
         .attr("height", function(d){
-            if (fileName == "data.json") {
+            if (type == "date") {
                 return height - yScale(d.volume);
             } else {
                 return height - monthYScale(d.volume);
             }
         })
         .attr("y", function(d) {
-            if (fileName == "data.json") {
+            if (type == "date") {
                  return yScale(d.volume);
             } else {
                 return monthYScale(d.volume);
@@ -272,18 +272,7 @@ function draw(data, volumeData) {
         .attr("class", "crosshair")
 //            .datum({ x: x.domain()[80], y: 67.5})
         .call(crosshair)
-    
-    
-    
-//    
-//   var volumeBar =   svg.select("g.volume").datum(data);
-//    volumeBar.on("mouseover", handleMouseOver);
-    
-//    volumeBar.style('fill', function(d, i) { 
-//        console.log(volumeBar.d);
-//        return '#DDDDDD'
-//    });
-//    volumeBar.call(volume);
+
 
     var state = svg.selectAll("g.candlestick").datum(data);
     state.call(candlestick)

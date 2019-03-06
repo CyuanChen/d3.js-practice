@@ -10,8 +10,12 @@
     <p>長條圖：月營收</p>
 
     
-    <button onclick='loadJSON()'>月營收</button>
-    <button onclick="loadRateJSON();">月營收年增率</button>
+    <button onclick='loadJSON("earn1102.json", "price1102.json")'>亞泥月營收</button>
+    <button onclick='loadRateJSON("earn1102.json", "price1102.json")'>亞泥月營收年增率</button>
+    <button onclick='loadJSON("earn2308.json", "price2308.json")'>台達電月營收</button>
+    <button onclick='loadRateJSON("earn2308.json", "price2308.json")'>台達電月營收年增率</button>
+    <button onclick='loadJSON("earn3008.json", "price3008.json")'>大立光月營收</button>
+    <button onclick='loadRateJSON("earn3008.json", "price3008.json")'>大立光月營收年增率</button>
 <!-- load the d3.js library -->    	
 <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="techan.js"></script>

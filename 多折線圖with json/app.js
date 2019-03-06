@@ -1,6 +1,6 @@
 
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 100, bottom: 30, left: 30},
+var margin = {top: 20, right: 100, bottom: 30, left: 60},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -63,7 +63,7 @@ var svg = d3.select("body").append("svg")
           "translate(" + margin.left + "," + margin.top + ")");
 var theData = undefined;
 //    loadRateJSON();
-loadJSON();
+loadJSON("earn1102.json", "price1102.json");
 
 
 function draw(data, origindata) {
@@ -87,10 +87,14 @@ function draw(data, origindata) {
 //    xScale.domain(d3.extent(data, function(d) { 
 //    return d.date; }));
     xScale.domain(data.map(function(d){return d.date;}));
-    yScale.domain([d3.min(data, function(d){return d.price - 5;}), d3.max(data, function(d){ return d.price + 5;})])
+    
+    var maxData = d3.max(data, function(d){return d.price}) / 10;
+//    console.log(maxData);
+    
+    yScale.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
     x.domain(d3.extent(data, function(d) { 
     return d.date; }));
-    y.domain([d3.min(data, function(d){return d.price - 5;}), d3.max(data, function(d){ return d.price + 5;})])
+    y.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
 //    y.domain([0, d3.max(data, function(d) {return d.price; })]);
 
     var line = d3.line()
@@ -124,11 +128,14 @@ function drawBar(data) {
     return d.date; }));
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
-    y2.domain([d3.min(data, function(d) {return d.earn -500000;}), d3.max(data, function(d) {return d.earn + 500000;})]);
+    var minData = d3.min(data, function(d){return d.earn}) / 10;
+//    console.log(minData)
+    
+    y2.domain([d3.min(data, function(d) {return d.earn - minData;}), d3.max(data, function(d) {return d.earn + minData;})]);
 //    y2.domain(d3.extent(data, function(d) {return d.price;}))
 //    console.log(data);
     xScale.domain(data.map(function(d){return d.date;}));
-    yScale.domain([d3.min(data, function(d) {return d.earn -5;}), d3.max(data, function(d) {return d.earn + 5;})]);
+    
     
     var chart = svg.selectAll("bar")
         .data(data)
@@ -211,10 +218,10 @@ var mapDate = [];
 
 
 
-function loadJSON() {
+function loadJSON(earnData, priceData) {
     svg.selectAll("*").remove();  
-    d3.json("data.json",function(error, data) {
-    
+    d3.json(earnData ,function(error, data) {
+//    console.log(data);
     if (error) throw error;
     var jsonData = data["Data"];
     
@@ -229,34 +236,37 @@ function loadJSON() {
     // trigger render
 //    draw(newData);
     drawBar(newData);
-    });
-    
-    d3.json("stock.json", function(error, data) {
-    var jsonData = data["Data"];
+        
+    d3.json(priceData , function(error, data) {
+//        console.log(data);
+        var jsonData = data["Data"];
 //    console.log(jsonData);
         
-    var newData = jsonData.map(function(d) {
+        var newData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
             price: +d[6]
         };
-    });
+        });
 //    console.log(newData);
 //    drawBar(newData);
-    draw(newData, jsonData);
+        draw(newData, jsonData);
     
-}) 
+    }) 
+});
+
+   
     
 
 }
     
-function loadRateJSON() {
+function loadRateJSON(earnData, priceData) {
     svg.selectAll("*").remove();
-    d3.json("data.json",function(error, data) {
+    d3.json(earnData, function(error, data) {
   if (error) throw error;
     var jsonData = data["Data"];
     
-    console.log(jsonData);
+//    console.log(jsonData);
     var newData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
@@ -270,12 +280,12 @@ function loadRateJSON() {
         }
     })
     drawBar2(newData2);
-    console.log(newData);
+//    console.log(newData);
     // trigger render
 //    draw(newData);
    
 });
-     d3.json("stock.json", function(error, data) {
+     d3.json(priceData, function(error, data) {
     var jsonData = data["Data"];
 //    console.log(jsonData);
         
