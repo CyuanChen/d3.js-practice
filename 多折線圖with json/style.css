@@ -29,7 +29,7 @@
 }
 
 .crosshair path.wire {
-    stroke: #DDDDDD;
+    stroke: rgba(0,0,0, 0.5);
     stroke-dasharray: 1, 1;
 }
 

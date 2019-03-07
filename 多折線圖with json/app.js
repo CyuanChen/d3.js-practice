@@ -19,7 +19,8 @@ var x3 = techan.scale.financetime()
 var candlestick = techan.plot.candlestick()
         .xScale(x3)
         .yScale(y);
-
+var priceDataArr;
+var monthEarnDataArr;
 
 
 
@@ -44,12 +45,16 @@ var timeAnnotation = techan.plot.axisannotation()
         .translate([0, height]);
 
 var crosshair = techan.plot.crosshair()
-        .xScale(x)
+        .xScale(x3)
         .yScale(y)
 //        .xAnnotation(timeAnnotation)
 //        .yAnnotation(ohlcAnnotation)
         .on("move", move);
-
+var textSvg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // define the line
 // append the svg obgect to the body of the page
@@ -61,29 +66,24 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
+
+var svgText = textSvg.append("g")
+            .attr("class", "description")
+            .append("text")
+//            .attr("x", margin.left)
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "start")
+            .text("");
 var theData = undefined;
 //    loadRateJSON();
 loadJSON("earn1102.json", "price1102.json");
 
 
 function draw(data, origindata) {
-    var accessor = candlestick.accessor();
-    
     data = data.reverse();
-    origindata = origindata.reverse();
-    
-    origindata = origindata.map(function(d) {
-        return {
-            date: parseTime(d[0]),
-            open: +d[3],
-            high: +d[4],
-            low: +d[5],
-            close: +d[6],
-            volume: +d[10]
-      }                          
-  })
-//    console.log(origindata);
-    x3.domain(origindata.map(accessor.d));
+    priceDataArr = data;
+    x3.domain(origindata.map(candlestick.accessor().d));
 //    xScale.domain(d3.extent(data, function(d) { 
 //    return d.date; }));
     xScale.domain(data.map(function(d){return d.date;}));
@@ -98,7 +98,8 @@ function draw(data, origindata) {
 //    y.domain([0, d3.max(data, function(d) {return d.price; })]);
 
     var line = d3.line()
-    .x(function(d) {return xScale(d.date) + xScale.bandwidth() / 2;})
+        .x(function(d){return x3(d.date)})
+//    .x(function(d) {return xScale(d.date) + xScale.bandwidth() / 2;})
     .y(function(d) {return yScale(d.price);})
     
     svg.append("path")
@@ -110,8 +111,6 @@ function draw(data, origindata) {
 //        .attr("transform", "translate(" + (xScale.bandwidth() / 2) + ",0)")
         .attr("d", line);
     
-
-  
     svg.append("g")
     .call(yAxis.ticks(5));
 //        .call(d3.axisLeft(yScale).ticks(5));
@@ -121,9 +120,13 @@ function draw(data, origindata) {
         .call(crosshair)
   }
     
-function drawBar(data) {
+function drawBar(data, priceData) {
     svg.selectAll("*").remove();
+    monthEarnDataArr = data;
     data.reverse();
+    x3.domain(priceData.map(candlestick.accessor().d));
+//    x3.domain(priceData.map(candlestick.accessor().d));
+     
     x.domain(d3.extent(data, function(d) { 
     return d.date; }));
     x2.domain(d3.extent(data, function(d) { 
@@ -142,7 +145,7 @@ function drawBar(data) {
         .enter().append("g");
     chart.append("rect")
         .attr("class", "bar")
-        .attr("x", function(d){return xScale(d.date);})
+        .attr("x", function(d){return x3(d.date) - xScale.bandwidth() / 2;})
         .attr("height", function(d){return height - y2(d.earn);})
         .attr("y", function(d){return y2(d.earn);})
         .attr("width", xScale.bandwidth());
@@ -153,7 +156,7 @@ function drawBar(data) {
         .attr("transform", "translate(0," + height + ")")
 //        .call(xAxis.ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
     
-        .call(d3.axisBottom(xScale).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
+        .call(d3.axisBottom(x3).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
     
     // Add the Y2 Axis
     svg.append("g")
@@ -163,13 +166,14 @@ function drawBar(data) {
     
 }
 
-function drawBar2(data) {
+function drawBar2(data, priceData) {
     data.reverse();
 //    console.log(data);
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
     y2.domain([-50, 75]);
 //    y2.domain(d3.extent(data, function(d){ return d.revenue;})).nice();
+    x3.domain(priceData.map(candlestick.accessor().d));
     xScale.domain(data.map(function(d){return d.date;}));
     
      svg.append("g")
@@ -182,7 +186,7 @@ function drawBar2(data) {
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xScale).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+        .call(d3.axisBottom(x3).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
     
     
     // Add the Y2 Axis
@@ -197,7 +201,7 @@ function drawBar2(data) {
     
     chart.append("rect")
         .attr("class", "bar")
-        .attr("x", function(d){return xScale(d.date);})
+        .attr("x", function(d){return x3(d.date) - xScale.bandwidth() / 2;})
         .attr("height", function(d){return Math.abs(y2(d.revenue) - y2(0));})
         .attr("y", function(d){
             if (d.revenue > 0) {
@@ -221,40 +225,47 @@ var mapDate = [];
 function loadJSON(earnData, priceData) {
     svg.selectAll("*").remove();  
     d3.json(earnData ,function(error, data) {
-//    console.log(data);
     if (error) throw error;
     var jsonData = data["Data"];
-    
-//    console.log(jsonData);
-    var newData = jsonData.map(function(d) {
+    var newEarnData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
             earn: +d[5]
         };
     });
-//    console.log(newData);
-    // trigger render
-//    draw(newData);
-    drawBar(newData);
-        
-    d3.json(priceData , function(error, data) {
+
+    d3.json(priceData , function(error, priceData) {
 //        console.log(data);
-        var jsonData = data["Data"];
+        var jsonData = priceData["Data"];
 //    console.log(jsonData);
         
         var newData = jsonData.map(function(d) {
+            return {
+                date: parseTime(d[0]),
+                price: +d[6]
+            };
+        });
+        jsonData = jsonData.reverse();
+    
+        jsonData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
-            price: +d[6]
-        };
-        });
+            open: +d[3],
+            high: +d[4],
+            low: +d[5],
+            close: +d[6],
+            volume: +d[10]
+            }                          
+        })
 //    console.log(newData);
 //    drawBar(newData);
+        drawBar(newEarnData, jsonData);
         draw(newData, jsonData);
     
-    }) 
-});
+        }) 
+    });
 
+  
    
     
 
@@ -262,12 +273,11 @@ function loadJSON(earnData, priceData) {
     
 function loadRateJSON(earnData, priceData) {
     svg.selectAll("*").remove();
-    d3.json(earnData, function(error, data) {
-  if (error) throw error;
+  
+   d3.json(earnData ,function(error, data) {
+    if (error) throw error;
     var jsonData = data["Data"];
-    
-//    console.log(jsonData);
-    var newData = jsonData.map(function(d) {
+    var newEarnData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
             earn: +d[5]
@@ -279,42 +289,64 @@ function loadRateJSON(earnData, priceData) {
             revenue: +d[7]
         }
     })
-    drawBar2(newData2);
-//    console.log(newData);
-    // trigger render
-//    draw(newData);
-   
-});
-     d3.json(priceData, function(error, data) {
-    var jsonData = data["Data"];
+//    drawBar2(newData2);
+
+    d3.json(priceData , function(error, priceData) {
+//        console.log(data);
+        var jsonData = priceData["Data"];
 //    console.log(jsonData);
         
-    var newData = jsonData.map(function(d) {
+        var newData = jsonData.map(function(d) {
+            return {
+                date: parseTime(d[0]),
+                price: +d[6]
+            };
+        });
+        jsonData = jsonData.reverse();
+    
+        jsonData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
-            price: +d[6]
-        };
-    });
+            open: +d[3],
+            high: +d[4],
+            low: +d[5],
+            close: +d[6],
+            volume: +d[10]
+            }                          
+        })
 //    console.log(newData);
 //    drawBar(newData);
-    draw(newData, jsonData);
+        drawBar2(newData2, jsonData);
+        draw(newData, jsonData);
     
-})  
-    
+        }) 
+    }); 
     
 
 }
     
  function move(coords, index) {
-//    console.log(coords.x + "," + coords.y)
+//    console.log(priceDataArr);
+//     console.log(monthEarnDataArr[0].date);
+//     console.log("coords" + coords.x)
     
     var i;
-//    for (i = 0; i < dataArr.length; i ++) {
-//        if (coords.x === dataArr[i].date) {
-//            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + ", 成交量：" + dataArr[i].volume); 
-//                         + "(" + dataArr[i].percentChange + "%)" + ", 成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
-//        }
-//    }
+    if (monthEarnDataArr.length == priceDataArr.length) {
+//        console.log(coords.x)
+//        console.log("coord: " + coords.x + "date: " + priceDataArr[0].date);
+//        console.log(coords.x === monthEarnDataArr[0].date)
+        for (i = 0; i < monthEarnDataArr.length; i ++) {
+//            console.log(monthEarnDataArr[i].date);
+            
+            if (coords.x === priceDataArr[i].date) {
+                console.log(coords.x + "," + coords.y)
+                svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x)); 
+//                             + "股價：" + priceDataArr[i].price + "月營收：" + monthEarnDataArr[i].earn); 
+                             
+            }
+        }
+    }
+
 }   
 
 

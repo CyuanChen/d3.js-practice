@@ -304,8 +304,8 @@ function out() {
 function move(coords, index) {
 //    console.log(coords.x + "," + coords.y)
 //    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
-    
     var i;
+//    console.log("coor: " + coords.x + "date: " + dataArr[0].date );
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
             svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + ", 成交量：" + dataArr[i].volume); 
