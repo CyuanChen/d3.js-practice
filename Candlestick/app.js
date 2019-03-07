@@ -272,9 +272,7 @@ function draw(data, volumeData, type) {
     state
         .on("mouseover", function(d, i) {
         svgText.text("hahahah");
-        console.log("d: " + d[i].date + "i: " + i);
-        
-            
+        console.log("d: " + d[i].date + "i: " + i);    
     })
     
     
@@ -308,7 +306,7 @@ function move(coords, index) {
 //    console.log("coor: " + coords.x + "date: " + dataArr[0].date );
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
-            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + ", 成交量：" + dataArr[i].volume); 
+            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
 //                         + "(" + dataArr[i].percentChange + "%)" + ", 成交量： " + dataArr[i].volume + ", 5MA: " + dataArr[i].fiveMA + ", 20MA: " + dataArr[i].twentyMA + ", 60MA: " + dataArr[i].sixtyMA );
         }
     }
