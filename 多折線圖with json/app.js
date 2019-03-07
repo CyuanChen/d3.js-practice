@@ -21,7 +21,7 @@ var candlestick = techan.plot.candlestick()
         .yScale(y);
 var priceDataArr;
 var monthEarnDataArr;
-
+var loadType;
 
 
 var xScale = d3.scaleBand().rangeRound([0, width]).padding(0.4);
@@ -94,6 +94,7 @@ function draw(data, origindata) {
     yScale.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
     x.domain(d3.extent(data, function(d) { 
     return d.date; }));
+//    y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     y.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
 //    y.domain([0, d3.max(data, function(d) {return d.price; })]);
 
@@ -168,6 +169,7 @@ function drawBar(data, priceData) {
 
 function drawBar2(data, priceData) {
     data.reverse();
+    monthEarnDataArr = data;
 //    console.log(data);
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
@@ -222,8 +224,10 @@ var mapDate = [];
 
 
 
+
 function loadJSON(earnData, priceData) {
     svg.selectAll("*").remove();  
+    loadType = "monthRate";
     d3.json(earnData ,function(error, data) {
     if (error) throw error;
     var jsonData = data["Data"];
@@ -233,7 +237,7 @@ function loadJSON(earnData, priceData) {
             earn: +d[5]
         };
     });
-
+//    priceDataArr = newEarnData;
     d3.json(priceData , function(error, priceData) {
 //        console.log(data);
         var jsonData = priceData["Data"];
@@ -257,6 +261,7 @@ function loadJSON(earnData, priceData) {
             volume: +d[10]
             }                          
         })
+//        monthEarnDataArr = newData;
 //    console.log(newData);
 //    drawBar(newData);
         drawBar(newEarnData, jsonData);
@@ -273,23 +278,17 @@ function loadJSON(earnData, priceData) {
     
 function loadRateJSON(earnData, priceData) {
     svg.selectAll("*").remove();
-  
+    loadType = "yearRate";
    d3.json(earnData ,function(error, data) {
     if (error) throw error;
     var jsonData = data["Data"];
     var newEarnData = jsonData.map(function(d) {
         return {
             date: parseTime(d[0]),
-            earn: +d[5]
+            earn: +d[5],
+            revenue: +d[7]
         };
     });
-    var newData2 = jsonData.map(function(d) {
-        return {
-            date: parseTime(d[0]),
-            revenue: +d[7]
-        }
-    })
-//    drawBar2(newData2);
 
     d3.json(priceData , function(error, priceData) {
 //        console.log(data);
@@ -316,7 +315,8 @@ function loadRateJSON(earnData, priceData) {
         })
 //    console.log(newData);
 //    drawBar(newData);
-        drawBar2(newData2, jsonData);
+//        drawBar2(newData2, jsonData);
+         drawBar2(newEarnData, jsonData);
         draw(newData, jsonData);
     
         }) 
@@ -325,27 +325,27 @@ function loadRateJSON(earnData, priceData) {
 
 }
     
- function move(coords, index) {
-//    console.log(priceDataArr);
-//     console.log(monthEarnDataArr[0].date);
-//     console.log("coords" + coords.x)
-    
+ function move(coords, index) {    
     var i;
-    if (monthEarnDataArr.length == priceDataArr.length) {
 //        console.log(coords.x)
 //        console.log("coord: " + coords.x + "date: " + priceDataArr[0].date);
+    console.log()
 //        console.log(coords.x === monthEarnDataArr[0].date)
         for (i = 0; i < monthEarnDataArr.length; i ++) {
 //            console.log(monthEarnDataArr[i].date);
             
-            if (coords.x === priceDataArr[i].date) {
-                console.log(coords.x + "," + coords.y)
-                svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x)); 
-//                             + "股價：" + priceDataArr[i].price + "月營收：" + monthEarnDataArr[i].earn); 
+            if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
+                console.log(coords.y);
+                if (loadType == "monthRate") {
+                    svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn); 
+                } else {
+                    svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
+                }
+                
+                
                              
             }
         }
-    }
 
 }   
 
