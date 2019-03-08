@@ -1,3 +1,11 @@
+body {
+        font: 13px sans-serif;
+    }
+
+
+.description {
+    font: 17px sans-serif;
+}
 .line {
   fill: none;
   stroke: #ff0000;

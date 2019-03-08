@@ -141,11 +141,13 @@ function loadJSON(file) {
     svg.append("g")
             .attr("class", "y axis")
             .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
+//            .attr("transform", "rotate(-90)")
+//            .attr("x", )
+            .attr("y", -10)
+//            .attr("dx", ".03em")
+//            .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Price ($)");
+            .text("Price (TWD)");
     
     
     // Data to display initially
@@ -207,11 +209,14 @@ function loadJSON2(file) {
     svg.append("g")
             .attr("class", "y axis")
             .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
+            .attr("y", -10)
+//            .attr("transform", "rotate(-90)")
+//            .attr("x", )
+//            .attr("y", 6)
+//            .attr("dx", ".03em")
+//            .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Price ($)");
+            .text("Price (TWD)");
     
     
     // Data to display initially

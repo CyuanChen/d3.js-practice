@@ -1,6 +1,6 @@
 
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 100, bottom: 30, left: 60},
+var margin = {top: 20, right: 80, bottom: 30, left: 80},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -105,6 +105,12 @@ function draw(data, origindata) {
     
     svg.append("g")
     .call(yAxis.ticks(5));
+    
+    svg.append("g")
+        .append("text")
+        .attr("y", -10)
+        .style("text-anchor", "end")
+        .text("Price (TWD)");
    
     svg.append("g")
         .attr("class", "crosshair")
@@ -149,7 +155,12 @@ function drawBar(data, priceData) {
         .attr("class", "y axis")
         .attr("transform", "translate(" + width + ",0)")
         .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
-    
+    svg.append("g")
+        .attr("transform", "translate(" + (width + 40) + ",0)")
+        .append("text")
+        .attr("y", -10)
+        .style("text-anchor", "end")
+        .text("(百萬元)");
 }
 
 // 畫月營收年增率Bar條
@@ -183,6 +194,14 @@ function drawBar2(data, priceData) {
         .attr("class", "y axis")
         .attr("transform", "translate(" + width + ",0)")
         .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
+    
+    svg.append("g")
+        .attr("transform", "translate(" + (width + 20) + ",0)")
+        .append("text")
+        .attr("y", -10)
+        .style("text-anchor", "end")
+        .text("(%)");
+    
 
     var chart = svg.selectAll("bar")
         .data(data)
@@ -214,7 +233,7 @@ function loadJSON(earnData, priceData) {
         var newEarnData = jsonData.map(function(d) {
             return {
                 date: parseTime(d[0]),
-                earn: +d[5]
+                earn: +(Math.round(d[5]/ 1000))
             };
         });
 
@@ -316,9 +335,9 @@ function loadRateJSON(earnData, priceData) {
             if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
                 console.log(coords.y);
                 if (loadType == "monthRate") {
-                    svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn); 
+                    svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
                 } else {
-                    svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
+                    svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
                 }
                 
                 
