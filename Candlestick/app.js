@@ -144,8 +144,6 @@ function loadJSON(file) {
 //            .attr("transform", "rotate(-90)")
 //            .attr("x", )
             .attr("y", -10)
-//            .attr("dx", ".03em")
-//            .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Price (TWD)");
     
