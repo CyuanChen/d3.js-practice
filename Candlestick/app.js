@@ -32,8 +32,13 @@ var candlestick = techan.plot.candlestick()
         .xScale(x)
         .yScale(y);
 
+var zoom = d3.zoom()
+        .scaleExtent([1, 5])
+        .on("zoom", zoomed);
+var zoomableInit, yInit;
+
 var volume = techan.plot.volume()
-//        .accessor(candlestick.accessor())
+        .accessor(candlestick.accessor())
         .xScale(x)
         .yScale(yVolume);
 var xAxis = d3.axisBottom()
@@ -52,8 +57,9 @@ var timeAnnotation = techan.plot.axisannotation()
         .axis(xAxis)
         .orient('bottom')
         .format(d3.timeFormat('%Y-%m-%d'))
-//        .width(65)
         .translate([0, height]);
+var drag = d3.drag()
+        .on("drag", drag);
 
 var crosshair = techan.plot.crosshair()
         .xScale(x)
@@ -78,15 +84,23 @@ var svgText = textSvg.append("g")
             .style("text-anchor", "start")
             .text("");
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("body")
+        .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
+//        .attr("width", width)
+//        .attr("height", height)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 var dataArr;
 var fileName;
 loadJSON("data.json");
+
+
+function dragged() {
+    console.log("drag");
+}
 
 function loadJSON(file) {
     fileName = file;
@@ -247,7 +261,6 @@ function draw(data, volumeData, type) {
         })
         .attr("width", xScale.bandwidth())
         .style("fill", function(d, i) {
-//            console.log(d + ", " + i);
             if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
                 return "#00AA00"
             } else {
@@ -258,26 +271,16 @@ function draw(data, volumeData, type) {
   svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
       
-    svg.append("g")
-        .attr("class", "crosshair")
-//            .datum({ x: x.domain()[80], y: 67.5})
-        .call(crosshair)
-
-
     var state = svg.selectAll("g.candlestick").datum(data);
     state.call(candlestick)
-//        .on("enter", function(d) { test(d);})
         .on("move", move)
-//        .on("mouseover", test);
         .each(function(d) {
         dataArr = d;
     });
     state
         .on("mouseover", function(d, i) {
-        svgText.text("hahahah");
         console.log("d: " + d[i].date + "i: " + i);    
     })
-    
     
     svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
     svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma0);
@@ -285,26 +288,36 @@ function draw(data, volumeData, type) {
 
     svg.select("g.volume.axis").call(volumeAxis);
     
-
+    svg.append("g")
+    .attr("class", "crosshair")
+    .call(crosshair)
+    .call(drag)
+//        .call(zoom);
+    svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .call(zoom);
     
-}
-function handleMouseOver(d, i ){ 
-}
-function test(d) {
-    console.log("ga " + d);
+    zoomableInit = x.zoomable().clamp(false).copy();
+    yInit = y.copy();
 }
 
 function enter() {
 //    coordsText.style("display", "inline");
+    console.log("enter");
 }
 
 function out() {
 //    coordsText.style("display", "none");
+    console.log("out")
 }
 
 function move(coords, index) {
-//    console.log(coords.x + "," + coords.y)
-//    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
+//    console.log("move");
+
     var i;
 //    console.log("coor: " + coords.x + "date: " + dataArr[0].date );
     for (i = 0; i < dataArr.length; i ++) {
@@ -315,6 +328,49 @@ function move(coords, index) {
     }
 }
 
+function zoomed() {
+//    console.log("zoomed");
+    var rescaledX = d3.event.transform.rescaleX(x);
+    var rescaledY = d3.event.transform.rescaleY(y);
+    xAxis.scale(rescaledX);
+    yAxis.scale(rescaledY);
+    candlestick.yScale(rescaledY);
+    sma0.yScale(rescaledY);
+    sma1.yScale(rescaledY);
+    ema2.yScale(rescaledY);
+    
+   // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
+    x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
+//    xScale.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
+    redraw();
+}
+
+function redraw() {
+    svg.select("g.candlestick").call(candlestick);
+    svg.select("g.x.axis").call(xAxis);
+    svg.select("g.y.axis").call(yAxis);
+    svg.select("g.sma.ma-0").call(sma0);
+    svg.select("g.sma.ma-1").call(sma1);
+    svg.select("g.ema.ma-2").call(ema2);
+    svg.select("g.volume.axis").call(volumeAxis);
+    svg.select("volumeBar")
+        .attr("x", function(d) {return xScale(d.date)})
+        .attr("height", function(d){
+            return  height - yVolume(d.volume);
+        })
+        .attr("y", function(d) {
+            return yVolume(d.volume);
+        })
+        .attr("width", xScale.bandwidth())
+        .style("fill", function(d, i) {
+            if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
+                return "#00AA00"
+            } else {
+               return "#DDDDDD" 
+            }
+            
+    });
+}
 
 
 

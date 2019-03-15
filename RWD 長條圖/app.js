@@ -85,30 +85,10 @@
     });
   }
 
-function loadJSONData(url) {
-    d3.json(url, function(json) {
-        
-    })
-    
-}
   // START!
   
   window.addEventListener("resize", draw);
-//  loadData("data.tsv");
-
-
-var requestURL = "https://github.com/CyuanChen/d3.js-practice/blob/master/Candlestick/data.json"
-
-var url = "https://github.com/CyuanChen/d3.js-practice/blob/master/RWD%20%E9%95%B7%E6%A2%9D%E5%9C%96/data.tsv";
-//loadJSONData(url);
-//loadData(url);
-
-d3.json("https://mapi.udn.com/datafeed/ednplus/article/5599/3658233.json", function(error, response) {
-    console.log(response);
-})
-
-
-
+  loadData("data.tsv");
 
 
 
