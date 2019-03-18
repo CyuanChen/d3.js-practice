@@ -73,7 +73,7 @@ path.volume.equal {
 
 .crosshair path.wire {
     
-    stroke: #DDDDDD;
+    stroke: #797979;
     stroke-dasharray: 1, 1;
 }
 

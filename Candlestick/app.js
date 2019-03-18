@@ -2,20 +2,22 @@ var margin = {top: 20, right: 50, bottom: 30, left: 60},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
+// 設定時間格式
 var parseDate = d3.timeParse("%Y%m%d");
 var monthDate = d3.timeParse("%Y%m");
+
 
 var x = techan.scale.financetime()
         .range([0, width]);
 var crosshairY = d3.scaleLinear()
         .range([height, 0]);
-
+// K線圖的y軸
 var y = d3.scaleLinear()
         .range([height - 60, 0]);
-
+// 成交量的y軸
 var yVolume = d3.scaleLinear()
         .range([height , height - 60]);
-
+//成交量的x軸
 var xScale = d3.scaleBand().range([0, width]).padding(0.15);
 
 var sma0 = techan.plot.sma()
@@ -33,21 +35,18 @@ var candlestick = techan.plot.candlestick()
         .yScale(y);
 
 var zoom = d3.zoom()
-        .scaleExtent([1, 5])
-        .translateExtent([[0, 0], [width, height]])
+        .scaleExtent([1, 5]) //設定縮放大小1 ~ 5倍
+        .translateExtent([[0, 0], [width, height]]) // 設定可以縮放的範圍，註解掉就可以任意拖曳
         .extent([[margin.left, margin.top], [width, height]])
         .on("zoom", zoomed);
-var zoomableInit, yInit;
 
-var volume = techan.plot.volume()
-        .accessor(candlestick.accessor())
-        .xScale(x)
-        .yScale(yVolume);
+var zoomableInit, yInit;
 var xAxis = d3.axisBottom()
         .scale(x);
 
 var yAxis = d3.axisLeft()
         .scale(y);
+
 var volumeAxis = d3.axisLeft(yVolume)
         .ticks(4)
         .tickFormat(d3.format(",.3s"));
@@ -61,21 +60,21 @@ var timeAnnotation = techan.plot.axisannotation()
         .format(d3.timeFormat('%Y-%m-%d'))
         .translate([0, height]);
 
-
+// 設定十字線
 var crosshair = techan.plot.crosshair()
         .xScale(x)
         .yScale(crosshairY)
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
-//        .on("enter", enter)
-//        .on("out", out)
         .on("move", move);
+
+// 設定文字區域
 var textSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+//設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
 var svgText = textSvg.append("g")
             .attr("class", "description")
             .append("text")
@@ -84,7 +83,7 @@ var svgText = textSvg.append("g")
             .attr("dy", ".71em")
             .style("text-anchor", "start")
             .text("");
-
+//設定畫圖區域
 var svg = d3.select("body")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -95,19 +94,17 @@ var svg = d3.select("body")
 
 
 var dataArr;
-var fileName;
 loadJSON("data.json");
 
 function loadJSON(file) {
-    fileName = file;
-    svg.selectAll("*").remove();
+    svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
     var jsonData = data["Data"];
     
     data = 
         jsonData
-        .map(function(d) {
+        .map(function(d) { // 設定data的格式
         return {
             date: parseDate(d[0]),
             open: +d[3],
@@ -157,12 +154,11 @@ function loadJSON(file) {
     
     // Data to display initially
     draw(data.slice(0, data.length), newData, "date");
-    // Only want this button to be active if the data has loaded
-    d3.select("button").on("click", function() { draw(data); }).style("display", "inline");
+        
 });
 }
+
 function loadJSON2(file) {
-    fileName = file;
     svg.selectAll("*").remove();
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
@@ -170,7 +166,6 @@ function loadJSON2(file) {
 //    console.log(jsonData);
     data = 
         jsonData
-//            .slice(0, 200)
         .map(function(d) {
         return {
             date: monthDate(d[0]),
@@ -203,8 +198,6 @@ function loadJSON2(file) {
             .attr("class", "sma ma-1");
     svg.append("g")
             .attr("class", "ema ma-2");
-//    svg.append("g")
-//            .attr("class", "volume");
     svg.append("g")
             .attr("class", "volume axis");
     svg.append("g")
@@ -226,14 +219,12 @@ function loadJSON2(file) {
     
     // Data to display initially
     draw(data.slice(0, data.length), newData, "month");
-    // Only want this button to be active if the data has loaded
-    d3.select("button").on("click", function() { draw(data); }).style("display", "inline");
 });
 }
 
 
 function draw(data, volumeData, type) {
-
+    // 設定domain，決定各座標所用到的資料
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     xScale.domain(volumeData.map(function(d){return d.date;}))
@@ -241,7 +232,7 @@ function draw(data, volumeData, type) {
 
     
     // Add a clipPath: everything out of this area won't be drawn.
-  var clip = svg.append("defs").append("svg:clipPath")
+    var clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
       .append("svg:rect")
       .attr("width", width )
@@ -249,10 +240,9 @@ function draw(data, volumeData, type) {
       .attr("x", 0)
       .attr("y", 0);
     
-    xScale.range([0, width].map(d => d));
-    var chart = svg.selectAll("volumeBar")
+    xScale.range([0, width].map(d => d)); // 設定xScale回到初始值
+    var chart = svg.selectAll("volumeBar") // 畫成交量bar chart
         .append("g")
-        
         .data(volumeData)
         .enter().append("g")
         .attr("clip-path", "url(#clip)")
@@ -267,16 +257,20 @@ function draw(data, volumeData, type) {
             return yVolume(d.volume);
         })
         .attr("width", xScale.bandwidth())
-        .style("fill", function(d, i) {
+        .style("fill", function(d, i) { // 根據漲跌幅去決定成交量的顏色
             if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
                return "#00AA00"
             } else {
                return "#DDDDDD" 
             }            
     });
+   
+   // 畫X軸 
     svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    //畫K線圖Y軸
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
       
+    //畫Ｋ線圖
     var state = svg.selectAll("g.candlestick")
         .attr("clip-path", "url(#clip)")
         .datum(data);
@@ -298,12 +292,12 @@ function draw(data, volumeData, type) {
     .call(crosshair)
     .call(zoom);
     
-    
+    //設定zoom的初始值
     zoomableInit = x.zoomable().clamp(false).copy();
     yInit = y.copy();
 }
 
-
+//設定當移動的時候要顯示的文字
 function move(coords, index) {
 //    console.log("move");
     var i;
@@ -315,15 +309,16 @@ function move(coords, index) {
     }
 }
 
-var rescaledX, rescaledY, rescaledYVolume;
+var rescaledX, rescaledY;
 var t;
 function zoomed() {
 //    console.log("zoomed");
+    
+    //根據zoom去取得座標轉換的資料
     t = d3.event.transform;
     rescaledX = d3.event.transform.rescaleY(x);
     rescaledY = d3.event.transform.rescaleY(y);
-    rescaledYVolume = d3.event.transform.rescaleY(yVolume);
-//    xAxis.scale(rescaledX);
+    // y座標zoom
     yAxis.scale(rescaledY);
     candlestick.yScale(rescaledY);
     sma0.yScale(rescaledY);
@@ -331,9 +326,12 @@ function zoomed() {
     ema2.yScale(rescaledY);
     
    // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
+    //x座標zoom
     x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
+    // 成交量x座標 zoom
     xScale.range([0, width].map(d => d3.event.transform.applyX(d)));
     
+    // 更新座標資料後，再重新畫圖
     redraw();
 }
 
@@ -346,18 +344,9 @@ function redraw() {
     svg.select("g.sma.ma-0").call(sma0);
     svg.select("g.sma.ma-1").call(sma1);
     svg.select("g.ema.ma-2").call(ema2);
-//    svg.select("g.volume.axis").call(volumeAxis);
-//    svg.selectAll("g.volumeBar")
-//        .attr("x", function(d) {return rescaledX(d.date)})
-//        .attr("y", function(d) {
-//            return rescaledY(d.volume);
-//        });
-//        .attr("height", function(d){
-//            return  height - yVolume(d.volume);
-//        });
+
     
 //    svg.selectAll("g.volumeBar").remove();
-    console.log("T.k: " + t.k);
     svg.selectAll("rect.volumeBar")
 //        .attr("transform", t)
 //        .attr("transform", rescaledX)
@@ -367,12 +356,6 @@ function redraw() {
 //        .attr("class", "volumeBar")
 //        .append("rect")
         .attr("x", function(d) {return xScale(d.date);})
-//        .attr("height", function(d){
-//            return  height - yVolume(d.volume);
-//        })
-//        .attr("y", function(d) {
-//            return t.y(d.volume) ;
-//        })
         .attr("width", (xScale.bandwidth()));
     
     
