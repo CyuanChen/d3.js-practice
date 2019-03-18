@@ -324,25 +324,20 @@ function zoomed() {
     rescaledY = d3.event.transform.rescaleY(y);
     rescaledYVolume = d3.event.transform.rescaleY(yVolume);
 //    xAxis.scale(rescaledX);
-//    yAxis.scale(rescaledY);
-//    candlestick.yScale(rescaledY);
-//    sma0.yScale(rescaledY);
-//    sma1.yScale(rescaledY);
-//    ema2.yScale(rescaledY);
+    yAxis.scale(rescaledY);
+    candlestick.yScale(rescaledY);
+    sma0.yScale(rescaledY);
+    sma1.yScale(rescaledY);
+    ema2.yScale(rescaledY);
     
    // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
     x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
     xScale.range([0, width].map(d => d3.event.transform.applyX(d)));
     
-//    xScale.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
     redraw();
 }
 
-//function zoomed() {
-//    console.log("zoom")
-//    svg.attr("transform")
-//    redraw();
-//}
+
 
 function redraw() {
     svg.select("g.candlestick").call(candlestick);
