@@ -16,7 +16,7 @@ var y = d3.scaleLinear()
 var yVolume = d3.scaleLinear()
         .range([height , height - 60]);
 
-var xScale = d3.scaleBand().range([0, width]).padding(0.1);
+var xScale = d3.scaleBand().range([0, width]).padding(0.15);
 
 var sma0 = techan.plot.sma()
         .xScale(x)
@@ -34,6 +34,8 @@ var candlestick = techan.plot.candlestick()
 
 var zoom = d3.zoom()
         .scaleExtent([1, 5])
+        .translateExtent([[0, 0], [width, height]])
+        .extent([[margin.left, margin.top], [width, height]])
         .on("zoom", zoomed);
 var zoomableInit, yInit;
 
@@ -58,16 +60,15 @@ var timeAnnotation = techan.plot.axisannotation()
         .orient('bottom')
         .format(d3.timeFormat('%Y-%m-%d'))
         .translate([0, height]);
-var drag = d3.drag()
-        .on("drag", drag);
+
 
 var crosshair = techan.plot.crosshair()
         .xScale(x)
         .yScale(crosshairY)
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
-        .on("enter", enter)
-        .on("out", out)
+//        .on("enter", enter)
+//        .on("out", out)
         .on("move", move);
 var textSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -88,19 +89,14 @@ var svg = d3.select("body")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-//        .attr("width", width)
-//        .attr("height", height)
+        .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 var dataArr;
 var fileName;
 loadJSON("data.json");
-
-
-function dragged() {
-    console.log("drag");
-}
 
 function loadJSON(file) {
     fileName = file;
@@ -108,10 +104,9 @@ function loadJSON(file) {
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
     var jsonData = data["Data"];
-//    console.log(jsonData);
+    
     data = 
         jsonData
-//            .slice(0, 200)
         .map(function(d) {
         return {
             date: parseDate(d[0]),
@@ -144,8 +139,6 @@ function loadJSON(file) {
             .attr("class", "sma ma-1");
     svg.append("g")
             .attr("class", "ema ma-2");
-//    svg.append("g")
-//            .attr("class", "volume");
     svg.append("g")
             .attr("class", "volume axis");
     svg.append("g")
@@ -238,21 +231,35 @@ function loadJSON2(file) {
 });
 }
 
+
 function draw(data, volumeData, type) {
 
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
-    
     xScale.domain(volumeData.map(function(d){return d.date;}))
     yVolume.domain(techan.scale.plot.volume(data).domain());
 
     
+    // Add a clipPath: everything out of this area won't be drawn.
+  var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
+    
+    xScale.range([0, width].map(d => d));
     var chart = svg.selectAll("volumeBar")
+        .append("g")
+        
         .data(volumeData)
-        .enter().append("g");
+        .enter().append("g")
+        .attr("clip-path", "url(#clip)")
+        ;
     chart.append("rect")
         .attr("class", "volumeBar")
-        .attr("x", function(d) {return xScale(d.date)})
+        .attr("x", function(d) {return xScale(d.date);})
         .attr("height", function(d){
             return  height - yVolume(d.volume);
         })
@@ -262,64 +269,44 @@ function draw(data, volumeData, type) {
         .attr("width", xScale.bandwidth())
         .style("fill", function(d, i) {
             if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
-                return "#00AA00"
+               return "#00AA00"
             } else {
                return "#DDDDDD" 
-            }
-            
+            }            
     });
-  svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
       
-    var state = svg.selectAll("g.candlestick").datum(data);
+    var state = svg.selectAll("g.candlestick")
+        .attr("clip-path", "url(#clip)")
+        .datum(data);
     state.call(candlestick)
-        .on("move", move)
         .each(function(d) {
         dataArr = d;
     });
-    state
-        .on("mouseover", function(d, i) {
-        console.log("d: " + d[i].date + "i: " + i);    
-    })
     
-    svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
-    svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma0);
-    svg.select("g.ema.ma-2").datum(techan.indicator.sma().period(50)(data)).call(sma0);
-
+    svg.select("g.sma.ma-0").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(10)(data)).call(sma0);
+    svg.select("g.sma.ma-1").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(20)(data)).call(sma0);
+    svg.select("g.ema.ma-2").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(50)(data)).call(sma0);
     svg.select("g.volume.axis").call(volumeAxis);
     
     svg.append("g")
     .attr("class", "crosshair")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("pointer-events", "all")
     .call(crosshair)
-    .call(drag)
-//        .call(zoom);
-    svg.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .call(zoom);
+    .call(zoom);
+    
     
     zoomableInit = x.zoomable().clamp(false).copy();
     yInit = y.copy();
 }
 
-function enter() {
-//    coordsText.style("display", "inline");
-    console.log("enter");
-}
-
-function out() {
-//    coordsText.style("display", "none");
-    console.log("out")
-}
 
 function move(coords, index) {
 //    console.log("move");
-
     var i;
-//    console.log("coor: " + coords.x + "date: " + dataArr[0].date );
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
             svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
@@ -328,22 +315,34 @@ function move(coords, index) {
     }
 }
 
+var rescaledX, rescaledY, rescaledYVolume;
+var t;
 function zoomed() {
 //    console.log("zoomed");
-    var rescaledX = d3.event.transform.rescaleX(x);
-    var rescaledY = d3.event.transform.rescaleY(y);
-    xAxis.scale(rescaledX);
-    yAxis.scale(rescaledY);
-    candlestick.yScale(rescaledY);
-    sma0.yScale(rescaledY);
-    sma1.yScale(rescaledY);
-    ema2.yScale(rescaledY);
+    t = d3.event.transform;
+    rescaledX = d3.event.transform.rescaleY(x);
+    rescaledY = d3.event.transform.rescaleY(y);
+    rescaledYVolume = d3.event.transform.rescaleY(yVolume);
+//    xAxis.scale(rescaledX);
+//    yAxis.scale(rescaledY);
+//    candlestick.yScale(rescaledY);
+//    sma0.yScale(rescaledY);
+//    sma1.yScale(rescaledY);
+//    ema2.yScale(rescaledY);
     
    // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
     x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
+    xScale.range([0, width].map(d => d3.event.transform.applyX(d)));
+    
 //    xScale.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
     redraw();
 }
+
+//function zoomed() {
+//    console.log("zoom")
+//    svg.attr("transform")
+//    redraw();
+//}
 
 function redraw() {
     svg.select("g.candlestick").call(candlestick);
@@ -352,24 +351,37 @@ function redraw() {
     svg.select("g.sma.ma-0").call(sma0);
     svg.select("g.sma.ma-1").call(sma1);
     svg.select("g.ema.ma-2").call(ema2);
-    svg.select("g.volume.axis").call(volumeAxis);
-    svg.select("volumeBar")
-        .attr("x", function(d) {return xScale(d.date)})
-        .attr("height", function(d){
-            return  height - yVolume(d.volume);
-        })
-        .attr("y", function(d) {
-            return yVolume(d.volume);
-        })
-        .attr("width", xScale.bandwidth())
-        .style("fill", function(d, i) {
-            if (data[i].change > 0) { return "#FF0000"} else if (data[i].change < 0) {
-                return "#00AA00"
-            } else {
-               return "#DDDDDD" 
-            }
-            
-    });
+//    svg.select("g.volume.axis").call(volumeAxis);
+//    svg.selectAll("g.volumeBar")
+//        .attr("x", function(d) {return rescaledX(d.date)})
+//        .attr("y", function(d) {
+//            return rescaledY(d.volume);
+//        });
+//        .attr("height", function(d){
+//            return  height - yVolume(d.volume);
+//        });
+    
+//    svg.selectAll("g.volumeBar").remove();
+    console.log("T.k: " + t.k);
+    svg.selectAll("rect.volumeBar")
+//        .attr("transform", t)
+//        .attr("transform", rescaledX)
+//        .attr("transform", d3.zoomIdentity.translate(t.x, 0))
+//        .attr("transform", "translate(0, " + t.x + ") scale(" + t.k + ")")
+//        .append("g")
+//        .attr("class", "volumeBar")
+//        .append("rect")
+        .attr("x", function(d) {return xScale(d.date);})
+//        .attr("height", function(d){
+//            return  height - yVolume(d.volume);
+//        })
+//        .attr("y", function(d) {
+//            return t.y(d.volume) ;
+//        })
+        .attr("width", (xScale.bandwidth()));
+    
+    
+
 }
 
 

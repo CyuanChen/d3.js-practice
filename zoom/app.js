@@ -4,16 +4,6 @@ var margin = {top: 20, right: 50, bottom: 30, left: 60},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-function redraw() {
-    svg.select("g.candlestick").call(candlestick);
-    svg.select("g.x.axis").call(xAxis);
-    svg.select("g.y.axis").call(yAxis);
-    svg.select("g.sma.ma-0").call(sma0);
-    svg.select("g.sma.ma-1").call(sma1);
-    svg.select("g.ema.ma-2").call(ema2);
-    svg.select("g.volume.axis").call(volumeAxis);
-    
-}
 // append the SVG object to the body of the page
 var svg = d3.select("#dataviz_axisZoom")
   .append("svg")
@@ -56,7 +46,7 @@ function loadDataChart() {
 
   // Create the scatter variable: where both the circles and the brush take place
   var scatter = svg.append('g')
-    .attr("clip-path", "url(#clip)")
+//    .attr("clip-path", "url(#clip)")
 
   // Add circles
   scatter

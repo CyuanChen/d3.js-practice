@@ -1,0 +1,15 @@
+ .zoom {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+       
+    .axis {
+      stroke-width: 0.5px;
+      stroke: #888;
+      font: 10px avenir next, sans-serif;
+    }
+    
+    .axis > path {
+      stroke: #888;
+    }
