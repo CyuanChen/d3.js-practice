@@ -51,10 +51,7 @@ var timeAnnotation = techan.plot.axisannotation()
         .axis(xAxis)
         .orient('bottom')
         .format(d3.timeFormat('%Y-%m-%d'))
-//        .width(65)
         .translate([0, height]);
-
-
 
 var crosshair = techan.plot.crosshair()
         .xScale(x)
@@ -62,8 +59,6 @@ var crosshair = techan.plot.crosshair()
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
 
-        .on("enter", enter)
-        .on("out", out)
         .on("move", move);
 var textSvg = d3.select("body").append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -86,20 +81,14 @@ var svg = d3.select("body").append("svg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//var coordsText = svg.append('text')
-//        .style("text-anchor", "end")
-//        .attr("class", "coords")
-//        .attr("x", width - 5)
-//        .attr("y", 15);
 var dataArr;
 
 d3.json("data.json", function(error, data) {
     var accessor = candlestick.accessor();
     var jsonData = data["Data"];
-//    console.log(jsonData);
+    
     data = 
         jsonData
-//            .slice(0, 200)
         .map(function(d) {
         return {
             date: parseDate(d[0]),
@@ -116,8 +105,6 @@ d3.json("data.json", function(error, data) {
         };
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
-    
-        
     svg.append("g")
             .attr("class", "candlestick");
     svg.append("g")
@@ -128,12 +115,9 @@ d3.json("data.json", function(error, data) {
             .attr("class", "ema ma-2");
     svg.append("g")
             .attr("class", "volume");
-  
-    
     svg.append("g")
             .attr("class", "volume axis");
     
-
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")");
@@ -155,48 +139,24 @@ d3.json("data.json", function(error, data) {
 });
 
 function draw(data) {
-   console.log(data); 
-//    console.log(data.map(function(d){ return d.date}));
+//   console.log(data); 
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
+    dataArr = data;
     
-     svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     yVolume.domain(techan.scale.plot.volume(data).domain());
     var volumeData = data.map(function(d){return d.volume;});
-//    console.log(volumeData);
-          svg.append("g")
-            .attr("class", "crosshair")
-//            .datum({ x: x.domain()[80], y: 67.5})
-            .call(crosshair)
-//            .each(function(d,i) {move(d,i);});
+    svg.append("g")
+        .attr("class", "crosshair")
+        .call(crosshair)
     
-   var volumeBar =   svg.select("g.volume").datum(data);
-    volumeBar.on("mouseover", handleMouseOver);
-    
-//    volumeBar.style('fill', function(d, i) { 
-//        console.log(volumeBar.d);
-//        return '#DDDDDD'
-//    });
-    volumeBar.call(volume);
-    
-    
+    svg.select("g.volume").datum(data)
+        .call(volume);
     
     var state = svg.selectAll("g.candlestick").datum(data);
-    state.call(candlestick)
-//        .on("enter", function(d) { test(d);})
-        .on("move", move)
-//        .on("mouseover", test);
-        .each(function(d) {
-        dataArr = d;
-    });
-    state
-        .on("mouseover", function(d, i) {
-        svgText.text("hahahah");
-        console.log("d: " + d[i].date + "i: " + i);
-        
-            
-    })
+    state.call(candlestick);
     
     
     svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
@@ -204,28 +164,11 @@ function draw(data) {
     svg.select("g.ema.ma-2").datum(techan.indicator.sma().period(50)(data)).call(sma0);
 
     svg.select("g.volume.axis").call(volumeAxis);
-    
 
-    
-}
-function handleMouseOver(d, i ){ 
-}
-function test(d) {
-    console.log("ga " + d);
 }
 
-function enter() {
-//    coordsText.style("display", "inline");
-}
 
-function out() {
-//    coordsText.style("display", "none");
-}
-
-function move(coords, index) {
-//    console.log(coords.x + "," + coords.y)
-//    coordsText.text(timeAnnotation.format()(coords.x) + ", " + ohlcAnnotation.format()(coords.y));
-    
+function move(coords) {
     var i;
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
