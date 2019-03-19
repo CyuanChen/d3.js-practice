@@ -176,9 +176,6 @@ function loadJSON2(file) {
             volume: +d[10],
             change: +d[7],
             percentChange: +d[8],
-//            fiveMA: +d[10],
-//            twentyMA: +d[11],
-//            sixtyMA: +d[12]
         };
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
@@ -240,13 +237,21 @@ function draw(data, volumeData, type) {
       .attr("x", 0)
       .attr("y", 0);
     
+    var candlestickClip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "candlestickClip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height - 60 )
+      .attr("x", 0)
+      .attr("y", 0);
+    
     xScale.range([0, width].map(d => d)); // 設定xScale回到初始值
     var chart = svg.selectAll("volumeBar") // 畫成交量bar chart
         .append("g")
         .data(volumeData)
         .enter().append("g")
-        .attr("clip-path", "url(#clip)")
-        ;
+        .attr("clip-path", "url(#clip)");
+    
     chart.append("rect")
         .attr("class", "volumeBar")
         .attr("x", function(d) {return xScale(d.date);})
@@ -267,23 +272,25 @@ function draw(data, volumeData, type) {
    
    // 畫X軸 
     svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    
     //畫K線圖Y軸
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
       
     //畫Ｋ線圖
     var state = svg.selectAll("g.candlestick")
-        .attr("clip-path", "url(#clip)")
+        .attr("clip-path", "url(#candlestickClip)")
         .datum(data);
     state.call(candlestick)
         .each(function(d) {
         dataArr = d;
     });
     
-    svg.select("g.sma.ma-0").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(10)(data)).call(sma0);
-    svg.select("g.sma.ma-1").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(20)(data)).call(sma0);
-    svg.select("g.ema.ma-2").attr("clip-path", "url(#clip)").datum(techan.indicator.sma().period(50)(data)).call(sma0);
+    svg.select("g.sma.ma-0").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(10)(data)).call(sma0);
+    svg.select("g.sma.ma-1").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(20)(data)).call(sma0);
+    svg.select("g.ema.ma-2").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(50)(data)).call(sma0);
     svg.select("g.volume.axis").call(volumeAxis);
     
+    // 畫十字線並對他設定zoom function
     svg.append("g")
     .attr("class", "crosshair")
     .attr("width", width)

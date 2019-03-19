@@ -46,7 +46,7 @@ function loadDataChart() {
 
   // Create the scatter variable: where both the circles and the brush take place
   var scatter = svg.append('g')
-//    .attr("clip-path", "url(#clip)")
+    .attr("clip-path", "url(#clip)")
 
   // Add circles
   scatter
