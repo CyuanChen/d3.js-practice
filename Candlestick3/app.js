@@ -94,10 +94,9 @@ var svg = d3.select("body")
 
 
 var dataArr;
-//loadJSON("data.json");
-loadJSON("https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/zoom/data.json");
+loadJSON("https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick3/data.json", "date");
 
-function loadJSON(file) {
+function loadJSON(file, type) {
     svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
@@ -106,7 +105,8 @@ function loadJSON(file) {
     data = 
         jsonData
         .map(function(d) { // 設定data的格式
-        return {
+        if (type == "date") {
+           return {
             date: parseDate(d[0]),
             open: +d[3],
             high: +d[4],
@@ -115,60 +115,9 @@ function loadJSON(file) {
             volume: +d[9],
             change: +d[7],
             percentChange: +d[8],
-            fiveMA: +d[10],
-            twentyMA: +d[11],
-            sixtyMA: +d[12]
-        };
-    }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-    
-    
-    var newData = jsonData.map(function(d) {
-        return {
-            date: parseDate(d[0]),
-            volume: d[9]
-        }
-    }).reverse();
-        
-    svg.append("g")
-            .attr("class", "candlestick");
-    svg.append("g")
-            .attr("class", "sma ma-0");
-    svg.append("g")
-            .attr("class", "sma ma-1");
-    svg.append("g")
-            .attr("class", "ema ma-2");
-    svg.append("g")
-            .attr("class", "volume axis");
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")");
-
-    svg.append("g")
-            .attr("class", "y axis")
-            .append("text")
-//            .attr("transform", "rotate(-90)")
-//            .attr("x", )
-            .attr("y", -10)
-            .style("text-anchor", "end")
-            .text("Price (TWD)");
-    
-    
-    // Data to display initially
-    draw(data.slice(0, data.length), newData, "date");
-        
-});
-}
-
-function loadJSON2(file) {
-    svg.selectAll("*").remove();
-    d3.json(file, function(error, data) {
-    var accessor = candlestick.accessor();
-    var jsonData = data["Data"];
-//    console.log(jsonData);
-    data = 
-        jsonData
-        .map(function(d) {
-        return {
+            }; 
+        } else {
+            return {
             date: monthDate(d[0]),
             open: +d[3],
             high: +d[4],
@@ -177,15 +126,25 @@ function loadJSON2(file) {
             volume: +d[10],
             change: +d[7],
             percentChange: +d[8],
-        };
+            };
+        }
+        
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
     
     var newData = jsonData.map(function(d) {
-        return {
+        if (type == "date") {
+            return {
+            date: parseDate(d[0]),
+            volume: d[9]
+            }
+        } else {
+            return {
             date: monthDate(d[0]),
             volume: d[10]
+            }
         }
+        
     }).reverse();
         
     svg.append("g")
@@ -206,29 +165,23 @@ function loadJSON2(file) {
             .attr("class", "y axis")
             .append("text")
             .attr("y", -10)
-//            .attr("transform", "rotate(-90)")
-//            .attr("x", )
-//            .attr("y", 6)
-//            .attr("dx", ".03em")
-//            .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text("Price (TWD)");
-    
-    
     // Data to display initially
-    draw(data.slice(0, data.length), newData, "month");
+    draw(data.slice(0, data.length), newData);
+        
 });
 }
 
 
-function draw(data, volumeData, type) {
+
+function draw(data, volumeData) {
     // 設定domain，決定各座標所用到的資料
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     xScale.domain(volumeData.map(function(d){return d.date;}))
     yVolume.domain(techan.scale.plot.volume(data).domain());
 
-    
     // Add a clipPath: everything out of this area won't be drawn.
     var clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
@@ -237,7 +190,7 @@ function draw(data, volumeData, type) {
       .attr("height", height )
       .attr("x", 0)
       .attr("y", 0);
-    
+    // 針對K線圖的，讓他不會蓋到成交量bar chart
     var candlestickClip = svg.append("defs").append("svg:clipPath")
       .attr("id", "candlestickClip")
       .append("svg:rect")
@@ -289,7 +242,7 @@ function draw(data, volumeData, type) {
     svg.select("g.sma.ma-0").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(10)(data)).call(sma0);
     svg.select("g.sma.ma-1").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(20)(data)).call(sma0);
     svg.select("g.ema.ma-2").attr("clip-path", "url(#candlestickClip)").datum(techan.indicator.sma().period(50)(data)).call(sma0);
-    svg.select("g.volume.axis").call(volumeAxis);
+     svg.select("g.volume.axis").call(volumeAxis);
     
     // 畫十字線並對他設定zoom function
     svg.append("g")
@@ -320,7 +273,6 @@ function move(coords, index) {
 var rescaledX, rescaledY;
 var t;
 function zoomed() {
-//    console.log("zoomed");
     
     //根據zoom去取得座標轉換的資料
     t = d3.event.transform;
@@ -334,9 +286,9 @@ function zoomed() {
     ema2.yScale(rescaledY);
     
    // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
-    //x座標zoom
+    //K線圖 x zoom
     x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
-    // 成交量x座標 zoom
+    // 成交量 x  zoom
     xScale.range([0, width].map(d => d3.event.transform.applyX(d)));
     
     // 更新座標資料後，再重新畫圖
@@ -352,22 +304,9 @@ function redraw() {
     svg.select("g.sma.ma-0").call(sma0);
     svg.select("g.sma.ma-1").call(sma1);
     svg.select("g.ema.ma-2").call(ema2);
-
-    
-//    svg.selectAll("g.volumeBar").remove();
     svg.selectAll("rect.volumeBar")
-//        .attr("transform", t)
-//        .attr("transform", rescaledX)
-//        .attr("transform", d3.zoomIdentity.translate(t.x, 0))
-//        .attr("transform", "translate(0, " + t.x + ") scale(" + t.k + ")")
-//        .append("g")
-//        .attr("class", "volumeBar")
-//        .append("rect")
         .attr("x", function(d) {return xScale(d.date);})
         .attr("width", (xScale.bandwidth()));
-    
-    
-
 }
 
 
