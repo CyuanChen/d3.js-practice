@@ -94,9 +94,10 @@ var svg = d3.select("body")
 
 
 var dataArr;
-loadJSON("data.json", "date");
+//loadJSON("data.json");
+loadJSON("https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/zoom/data.json");
 
-function loadJSON(file, type) {
+function loadJSON(file) {
     svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
     d3.json(file, function(error, data) {
     var accessor = candlestick.accessor();
@@ -105,8 +106,7 @@ function loadJSON(file, type) {
     data = 
         jsonData
         .map(function(d) { // 設定data的格式
-        if (type == "date") {
-           return {
+        return {
             date: parseDate(d[0]),
             open: +d[3],
             high: +d[4],
@@ -115,36 +115,18 @@ function loadJSON(file, type) {
             volume: +d[9],
             change: +d[7],
             percentChange: +d[8],
-        }; 
-        } else {
-            return {
-            date: monthDate(d[0]),
-            open: +d[3],
-            high: +d[4],
-            low: +d[5],
-            close: +d[6],
-            volume: +d[10],
-            change: +d[7],
-            percentChange: +d[8],
+            fiveMA: +d[10],
+            twentyMA: +d[11],
+            sixtyMA: +d[12]
         };
-        }
-        
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
     
     var newData = jsonData.map(function(d) {
-        if (type == "date") {
-            return {
+        return {
             date: parseDate(d[0]),
             volume: d[9]
-            }
-        } else {
-            return {
-            date: monthDate(d[0]),
-            volume: d[10]
-            }
         }
-        
     }).reverse();
         
     svg.append("g")
@@ -169,8 +151,10 @@ function loadJSON(file, type) {
             .attr("y", -10)
             .style("text-anchor", "end")
             .text("Price (TWD)");
+    
+    
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
+    draw(data.slice(0, data.length), newData, "date");
         
 });
 }
@@ -232,12 +216,12 @@ function loadJSON2(file) {
     
     
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
+    draw(data.slice(0, data.length), newData, "month");
 });
 }
 
 
-function draw(data, volumeData) {
+function draw(data, volumeData, type) {
     // 設定domain，決定各座標所用到的資料
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());

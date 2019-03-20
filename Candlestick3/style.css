@@ -24,9 +24,9 @@ path.candle.down {
     stroke: #00AA00;
 }
 
-path.volume {
-/*    opacity: 0.8;*/
-    fill: #DDDDDD;
+.volumeBar {
+    opacity: 0.8;
+    fill: #00AA00;
 }
 
 path.volume.up {
@@ -38,7 +38,7 @@ path.volume.down {
 }
 
 path.volume.equal {
-    fill: #DDDDDD;
+    fill: #FF0000;
 }
 
 .ma-0 path.line {
@@ -82,6 +82,11 @@ path.volume.equal {
 }
 
 
+rect.pane {
+    cursor: move;
+    fill: none;
+    pointer-events: all;
+}
 
 
 
