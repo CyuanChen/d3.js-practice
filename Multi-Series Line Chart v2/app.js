@@ -33,6 +33,7 @@ d3.tsv("data.tsv", type, function(error, data) {
       })
     };
   });
+    console.log(cities)
 
   // Using the initial data figure out the min / max dates
   x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -72,9 +73,11 @@ d3.tsv("data.tsv", type, function(error, data) {
         .data(cities)
         .enter().append("g")
         .attr("class", "city");
+    console.log(cities)
     city.append("path")
         .attr("class", "line")
-        .attr("d", function(d) {return line(d.values);})
+        .attr("d", function(d) {
+        return line(d.values);})
         .style("stroke", function(d) {return z(d.id);});
     city.append("text")
         .datum(function(d) {return {id:d.id,  value: d.values[d.values.length - 1]};})

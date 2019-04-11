@@ -93,7 +93,7 @@ function draw(data, origindata) {
     var line = d3.line()
         .x(function(d){return x(d.date)})
     .y(function(d) {return yScale(d.price);})
-    
+    console.log(data);
     svg.append("path")
         .datum(data)
         .attr("fill", "none")
@@ -229,17 +229,20 @@ function loadJSON(earnData, priceData) {
     loadType = "monthRate";
     d3.json(earnData ,function(error, data) {
         if (error) throw error;
+        console.log(data);
         var jsonData = data["Data"];
+        
         var newEarnData = jsonData.map(function(d) {
             return {
                 date: parseTime(d[0]),
                 earn: +(Math.round(d[5]/ 1000))
             };
         });
+        console.log(jsonData);
+        console.log(newEarnData);
 
         d3.json(priceData , function(error, priceData) {
             var jsonData = priceData["Data"];
-    //    console.log(jsonData);
 
             var newData = jsonData.map(function(d) {
                 return {

@@ -37,7 +37,7 @@ var candlestick = techan.plot.candlestick()
 var zoom = d3.zoom()
         .scaleExtent([1, 5]) //設定縮放大小1 ~ 5倍
         .translateExtent([[0, 0], [width, height]]) // 設定可以縮放的範圍，註解掉就可以任意拖曳
-        .extent([[margin.left, margin.top], [width, height]])
+        .extent([[0, 0], [width, height]])
         .on("zoom", zoomed);
 
 var zoomableInit, yInit;
@@ -94,7 +94,7 @@ var svg = d3.select("body")
 
 
 var dataArr;
-loadJSON("data.json", "date");
+loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/data.json", "date");
 
 function loadJSON(file, type) {
     svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
@@ -131,6 +131,7 @@ function loadJSON(file, type) {
         
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
+    console.log(data);
     
     var newData = jsonData.map(function(d) {
         if (type == "date") {
@@ -343,18 +344,18 @@ function zoomed() {
     rescaledX = d3.event.transform.rescaleY(x);
     rescaledY = d3.event.transform.rescaleY(y);
     // y座標zoom
-    yAxis.scale(rescaledY);
-    candlestick.yScale(rescaledY);
-    sma0.yScale(rescaledY);
-    sma1.yScale(rescaledY);
-    ema2.yScale(rescaledY);
+//    yAxis.scale(rescaledY);
+//    candlestick.yScale(rescaledY);
+//    sma0.yScale(rescaledY);
+//    sma1.yScale(rescaledY);
+//    ema2.yScale(rescaledY);
     
    // Emulates D3 behaviour, required for financetime due to secondary zoomable scale
     //x座標zoom
     x.zoomable().domain(d3.event.transform.rescaleX(zoomableInit).domain());
     // 成交量x座標 zoom
     xScale.range([0, width].map(d => d3.event.transform.applyX(d)));
-    
+//    y.range([height, 0].map(d => d3.event.transform.applyY(d)));
     // 更新座標資料後，再重新畫圖
     redraw();
 }
