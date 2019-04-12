@@ -27,17 +27,10 @@ var line = d3.line()
 var firstSeason;
 
 d3.json("data.json", function(error, data) {
-    console.log(data);
     var jsonData = data["Data"];
-    console.log(jsonData);
-//    var newData = jsonData.map(function(d) {
-//        return {
-//            season: +d[0],
-//            GPM: +d[55],
-//            OPM: +d[59],
-//            PROM: +d[65]
-//        }
-//    }).reverse();
+//    console.log(jsonData);
+    
+    
     var dataArr = [55,59,65]
     var newData = dataArr.map(function(id) {
         var i = 21
@@ -52,13 +45,6 @@ d3.json("data.json", function(error, data) {
      firstSeason = +jsonData.reverse()[0][0]
     console.log(firstSeason);
         
-        
-//        jsonData.map(function(d) { return {season: +d[0], value: +d[55];} }),
-//        jsonData.map(function(d) { return {season: +d[0], value: +d[59];} }),
-//        jsonData.map(function(d) { return { season: +d[0], value: +d[65];}})
-//    var test = [ {}, {data:2, value:3}]
-//    console.log("data: " + newData + "count" + newData.length);
-//    newData.map(function(d) { console.log(d.season)})
     draw(newData);
 })
 function draw(data) {
@@ -66,18 +52,19 @@ function draw(data) {
     
     y.domain([-20.0, 40.0]);
     z.domain(data.map(function(d) {return d.id;}))
-    data.map(function(d){ console.log(d.id)})
     
     
-    var i = 0;
+    var year = Math.floor(firstSeason/ 100);
+    var a = firstSeason % 4 - 1;
+    
     g.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x).ticks(20)
               .tickFormat(function(d) { 
-            var a = i % 4;
-            var sum = firstSeason + (100 * Math.floor(i / 4)) + a;
-            i += 1;
+        
+            var sum = (year + Math.floor(a / 4)) + "Q" + ((a % 4) + 1);
+            a += 1;
             return sum;
         })
     );
@@ -87,7 +74,10 @@ function draw(data) {
 //        .attr("transform", "translate()")
         .call(d3.axisRight(y).ticks(3).tickSize(width));
     var GPMData = data[0].values;
-    console.log(GPMData)
+    
+    g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "#777")
+        .attr("stroke-dasharray", "2.2");
     
 
     g.append("path")
@@ -140,6 +130,7 @@ function draw(data) {
         .attr("cx", function(d) {return x(d.season);})
         .attr("cy", function(d) {return y(d.value);})
         .attr("opacity", 1)
+    
 }
 
 
