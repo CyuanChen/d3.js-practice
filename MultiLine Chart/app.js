@@ -1,10 +1,18 @@
-var margin = {top: 20, right: 80, bottom: 80, left: 60},
+var margin = {top: 20, right: 100, bottom: 80, left: 20},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // 設定時間格式
 var parseDate = d3.timeParse("%Y%m%d");
 var monthDate = d3.timeParse("%Y%m");
+
+// 設定文字區域
+var textSvg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", 50)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 //設定畫圖區域
 var svg = d3.select("body")
@@ -14,6 +22,8 @@ var svg = d3.select("body")
         .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
 
 var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top +")");
 
@@ -25,6 +35,8 @@ var line = d3.line()
     .x(function(d) {return x(d.season);})
     .y(function(d) {return y(d.value);})
 var firstSeason;
+var legendKeys = ["毛利率", "營業利益率", "稅後純益率"]
+var color = { 毛利率: "steelblue" , 營業利益率: "green", 稅後純益率: "red"}
 
 d3.json("data.json", function(error, data) {
     var jsonData = data["Data"];
@@ -73,6 +85,16 @@ function draw(data) {
         .attr("class", "y axis")
 //        .attr("transform", "translate()")
         .call(d3.axisRight(y).ticks(3).tickSize(width));
+    
+    g.attr("class", "y axis")
+            .append("text")
+            .attr("transform", "translate(" + (width + 20) + ",0)")
+            .attr("x", 0)
+            .attr("y", -10)
+            .style("text-anchor", "end")
+            .text("(%)");
+    
+    
     var GPMData = data[0].values;
     
     g.selectAll(".tick:not(:first-of-type) line")
@@ -131,6 +153,21 @@ function draw(data) {
         .attr("cy", function(d) {return y(d.value);})
         .attr("opacity", 1)
     
+    
+    var lineLegend = textSvg.selectAll(".lineLegend")
+        .data(legendKeys)
+        .enter().append("g")
+        .attr("class", "lineLegend")
+        .attr("transform", function(d, i) {
+            return "translate(" + (margin.left + i*150) + "," + (0) + ")";
+        })
+    lineLegend.append("text")
+        .text(function(d) { return d;})
+        .attr("transform", "translate(15, 6)") // align text with boxes
+    
+    lineLegend.append("rect")
+        .attr("fill", d=> color[d])
+        .attr("width", 12).attr("height", 5)
 }
 
 
