@@ -69,9 +69,7 @@ var crosshair = techan.plot.crosshair()
         .on("move", move);
 
 // 設定文字區域
-var textSvg = d3.select("body").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", margin.top + margin.bottom)
+var textSvg = d3.select(".textSvg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
@@ -84,10 +82,7 @@ var svgText = textSvg.append("g")
             .style("text-anchor", "start")
             .text("");
 //設定畫圖區域
-var svg = d3.select("body")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+var svg = d3.select(".chartSvg")
         .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
