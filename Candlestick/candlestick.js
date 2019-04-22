@@ -171,67 +171,6 @@ function loadJSON(file, type) {
 });
 }
 
-function loadJSON2(file) {
-    svg.selectAll("*").remove();
-    d3.json(file, function(error, data) {
-    var accessor = candlestick.accessor();
-    var jsonData = data["Data"];
-//    console.log(jsonData);
-    data = 
-        jsonData
-        .map(function(d) {
-        return {
-            date: monthDate(d[0]),
-            open: +d[3],
-            high: +d[4],
-            low: +d[5],
-            close: +d[6],
-            volume: +d[10],
-            change: +d[7],
-            percentChange: +d[8],
-        };
-    }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
-    
-    
-    var newData = jsonData.map(function(d) {
-        return {
-            date: monthDate(d[0]),
-            volume: d[10]
-        }
-    }).reverse();
-        
-    svg.append("g")
-            .attr("class", "candlestick");
-    svg.append("g")
-            .attr("class", "sma ma-0");
-    svg.append("g")
-            .attr("class", "sma ma-1");
-    svg.append("g")
-            .attr("class", "ema ma-2");
-    svg.append("g")
-            .attr("class", "volume axis");
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")");
-
-    svg.append("g")
-            .attr("class", "y axis")
-            .append("text")
-            .attr("y", -10)
-//            .attr("transform", "rotate(-90)")
-//            .attr("x", )
-//            .attr("y", 6)
-//            .attr("dx", ".03em")
-//            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Price (TWD)");
-    
-    
-    // Data to display initially
-    draw(data.slice(0, data.length), newData);
-});
-}
-
 
 function draw(data, volumeData) {
     // 設定domain，決定各座標所用到的資料

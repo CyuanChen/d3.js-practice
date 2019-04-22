@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="monthlyRevenueStyle.css">
 <body>
     <button onclick="javascript:location.href='../index.html'">Back</button>
     <br>
@@ -8,17 +8,19 @@
     <p>長條圖：月營收 / 月營收年增率</p>
 
     
-    <button onclick='loadJSON("earn1102.json", "price1102.json")'>亞泥月營收</button>
-    <button onclick='loadRateJSON("earn1102.json", "price1102.json")'>亞泥月營收年增率</button>
-    <button onclick='loadJSON("earn2308.json", "price2308.json")'>台達電月營收</button>
-    <button onclick='loadRateJSON("earn2308.json", "price2308.json")'>台達電月營收年增率</button>
-    <button onclick='loadJSON("earn3008.json", "price3008.json")'>大立光月營收</button>
-    <button onclick='loadRateJSON("earn3008.json", "price3008.json")'>大立光月營收年增率</button>
+    <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn1102.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price1102.json")'>亞泥月營收</button>
+    <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn1102.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price1102.json")'>亞泥月營收年增率</button>
+    <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn2308.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price2308.json")'>台達電月營收</button>
+    <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn2308.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price2308.json")'>台達電月營收年增率</button>
+    <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn3008.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price3008.json")'>大立光月營收</button>
+    <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn3008.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price3008.json")'>大立光月營收年增率</button>
+    
+    <!-- 產生圖表的標籤   -->
     <svg class="textSvg" width="960" height="50"></svg>
     <svg class="chartSvg" width="960" height="500"></svg>
     
 <!-- load the d3.js library -->    	
 <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="techan.js"></script>
-    <script src="app.js"></script>
+    <script src="techanjs.js"></script>
+    <script src="monthlyRevenue.js"></script>
 </body>

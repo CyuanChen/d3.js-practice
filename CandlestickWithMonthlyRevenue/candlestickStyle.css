@@ -1,0 +1,103 @@
+
+path.candle {
+    stroke: #000000;
+}
+
+path.candle.body {
+    stroke-width: 0;
+}
+
+path.candle.up {
+    fill: #FF0000;
+    stroke: #FF0000;
+}
+
+path.candle.down {
+    fill: #00AA00;
+    stroke: #00AA00;
+}
+
+.volumeBar {
+    opacity: 0.8;
+    fill: #00AA00;
+}
+
+path.volume.up {
+    fill: #FF0000;
+}
+
+path.volume.down {
+    fill: #00AA00;
+}
+
+path.volume.equal {
+    fill: #FF0000;
+}
+
+.ma-0 path.line {
+    stroke: #1f77b4;
+    fill: none;
+    stroke-width: 2;
+}
+.ma-1 path.line {
+    stroke: #aec7e8;
+    fill: none;
+    stroke-width: 2;
+}
+.ma-2 path.line {
+    stroke: #ff7f0e;
+    fill: none;
+    stroke-width: 2;
+}
+
+.description {
+    font: 17px sans-serif;
+}
+.line {
+  fill: none;
+  stroke: #ff0000;
+  stroke-width: 2px;
+}
+    
+.bar {
+    border: 1px solid #0b3536;
+    border-radius: 6px;
+    fill: rgba(0,108,184, 0.8);  
+}
+
+.axis line {
+    stroke: #000;
+}
+
+.x.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+}
+
+.y.axis line {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+}
+
+.crosshair {
+    cursor: crosshair;
+}
+
+.crosshair path.wire {
+    
+    stroke: #797979;
+    stroke-dasharray: 1, 1;
+}
+
+.crosshair .axisannotation path {
+    fill: #DDDDDD;
+}
+
+rect.pane {
+    cursor: move;
+    fill: none;
+    pointer-events: all;
+}
+
+
+       

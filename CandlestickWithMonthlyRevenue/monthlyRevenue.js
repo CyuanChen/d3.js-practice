@@ -1,6 +1,7 @@
 
+
 // set the dimensions and margins of the graph
-var margin = {top: 20, right: 80, bottom: 30, left: 80},
+var margin = {top: 30, right: 80, bottom: 30, left: 80},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -14,7 +15,7 @@ var x2 = d3.scaleTime().range([0, width]);
 var y2 = d3.scaleLinear().range([height, 0]);
 var x = techan.scale.financetime()
         .range([0, width]);
-var candlestick = techan.plot.candlestick()
+var candlestickMonthly = techan.plot.candlestick()
         .xScale(x)
         .yScale(y);
 var priceDataArr;
@@ -48,7 +49,7 @@ var crosshair = techan.plot.crosshair()
 //        .xAnnotation(timeAnnotation)
 //        .yAnnotation(ohlcAnnotation)
         .on("move", move);
-var textSvg = d3.select(".textSvg")
+var textSvg = d3.select(".monthlyTextSvg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -56,7 +57,7 @@ var textSvg = d3.select(".textSvg")
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-var svg = d3.select(".chartSvg")
+var svg = d3.select(".monthlyChartSvg")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
@@ -69,13 +70,13 @@ var svgText = textSvg.append("g")
             .style("text-anchor", "start")
             .text("");
 var theData = undefined;
-loadJSON("earn1102.json", "price1102.json");
+loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn1102.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price1102.json");
 
 
 function draw(data, origindata) {
     data = data.reverse();
     priceDataArr = data;
-    x.domain(origindata.map(candlestick.accessor().d));
+    x.domain(origindata.map(candlestickMonthly.accessor().d));
 //    xScale.domain(d3.extent(data, function(d) { 
 //    return d.date; }));
     xScale.domain(data.map(function(d){return d.date;}));
@@ -89,7 +90,7 @@ function draw(data, origindata) {
     var line = d3.line()
         .x(function(d){return x(d.date)})
     .y(function(d) {return yScale(d.price);})
-    console.log(data);
+//    console.log(data);
     svg.append("path")
         .datum(data)
         .attr("fill", "none")
@@ -104,6 +105,7 @@ function draw(data, origindata) {
     
     svg.append("g")
         .append("text")
+        .attr("x", 30)
         .attr("y", -10)
         .style("text-anchor", "end")
         .text("Price (TWD)");
@@ -117,7 +119,7 @@ function drawBar(data, priceData) {
     svg.selectAll("*").remove();
     monthEarnDataArr = data;
     data.reverse();
-    x.domain(priceData.map(candlestick.accessor().d));
+    x.domain(priceData.map(candlestickMonthly.accessor().d));
     x2.domain(d3.extent(data, function(d) { 
     return d.date; }));
     var minData = d3.min(data, function(d){return d.earn}) / 10;
@@ -169,7 +171,7 @@ function drawBar2(data, priceData) {
     // 
     y2.domain([-50, 75]);
 //    y2.domain(d3.extent(data, function(d){ return d.revenue;})).nice();
-    x.domain(priceData.map(candlestick.accessor().d));
+    x.domain(priceData.map(candlestickMonthly.accessor().d));
     xScale.domain(data.map(function(d){return d.date;}));
     
     svg.append("g")
@@ -225,7 +227,7 @@ function loadJSON(earnData, priceData) {
     loadType = "monthRate";
     d3.json(earnData ,function(error, data) {
         if (error) throw error;
-        console.log(data);
+//        console.log(data);
         var jsonData = data["Data"];
         
         var newEarnData = jsonData.map(function(d) {
@@ -234,8 +236,8 @@ function loadJSON(earnData, priceData) {
                 earn: +(Math.round(d[5]/ 1000))
             };
         });
-        console.log(jsonData);
-        console.log(newEarnData);
+//        console.log(jsonData);
+//        console.log(newEarnData);
 
         d3.json(priceData , function(error, priceData) {
             var jsonData = priceData["Data"];
@@ -332,7 +334,7 @@ function loadRateJSON(earnData, priceData) {
 //            console.log(monthEarnDataArr[i].date);
             
             if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
-                console.log(coords.y);
+//                console.log(coords.y);
                 if (loadType == "monthRate") {
                     svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
                 } else {
@@ -346,5 +348,3 @@ function loadRateJSON(earnData, priceData) {
 
 }   
 
-
-    

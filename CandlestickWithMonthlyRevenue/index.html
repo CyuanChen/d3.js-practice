@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<html>
+    <head>
+        <link rel="stylesheet" href="candlestickStyle.css">
+        <link rel="stylesheet" href="monthlyRevenueStyle.css">
+
+    </head>
+    <body>
+        <button onclick="javascript:location.href='../index.html'">Back</button>
+        <p class="info">個股資訊： 亞泥</p>
+        <p>K線圖</p>
+        <p>深藍線: 5MA</p>
+        <p>淺藍線: 20MA</p>
+        <p>橘線：  60MA</p>
+        <p>下方Bar: 成交量</p>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/data.json', 'date')">亞泥日線</button>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/monthData.json', 'month')">亞泥月線</button>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/kData2308.json', 'date')">台達電日線</button>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/monthData2308.json', 'month')">台達電月線</button>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/kData3008.json', 'date')">大立光日線</button>
+        <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/monthData3008.json', 'month')">大立光月線</button>
+        <svg class="candlestickTextSvg" width="960" height="50"></svg>
+        <svg class="candlestickChartSvg" width="960" height="500"></svg>
+
+        <br>
+
+
+        <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn1102.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price1102.json")'>亞泥月營收</button>
+        <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn1102.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price1102.json")'>亞泥月營收年增率</button>
+        <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn2308.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price2308.json")'>台達電月營收</button>
+        <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn2308.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price2308.json")'>台達電月營收年增率</button>
+        <button onclick='loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn3008.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price3008.json")'>大立光月營收</button>
+        <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn3008.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price3008.json")'>大立光月營收年增率</button>
+
+        <!-- 產生圖表的標籤   -->
+        <svg class="monthlyTextSvg" width="960" height="50"></svg>
+        <svg class="monthlyChartSvg" width="960" height="500"></svg>    
+    
+        
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="techanjs.js"></script>
+        <script type="text/javascript" src="candlestick.js"></script>
+        <script type="text/javascript" src="monthlyRevenue.js"></script>
+    </body>
+</html>
