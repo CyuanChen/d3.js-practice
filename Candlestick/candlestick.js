@@ -1,6 +1,29 @@
-var margin = {top: 20, right: 50, bottom: 30, left: 60},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+var margin = {top: 20, right: 50, bottom: 30, left: 60};
+            
+var width = parseInt(d3.select(".chartSvg").style('width'), 10) - margin.left - margin.right
+var height = 500 - margin.top - margin.bottom;
+
+
+// 設定文字區域
+var textSvg = d3.select(".textSvg")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+//設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
+var svgText = textSvg.append("g")
+            .attr("class", "description")
+            .append("text")
+//            .attr("x", margin.left)
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "start")
+            .text("");
+//設定畫圖區域
+var svg = d3.select(".chartSvg")
+        .attr("pointer-events", "all")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 // 設定時間格式
 var parseDate = d3.timeParse("%Y%m%d");
@@ -68,28 +91,32 @@ var crosshair = techan.plot.crosshair()
         .yAnnotation(ohlcAnnotation)
         .on("move", move);
 
-// 設定文字區域
-var textSvg = d3.select(".textSvg")
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-//設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
-var svgText = textSvg.append("g")
-            .attr("class", "description")
-            .append("text")
-//            .attr("x", margin.left)
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "start")
-            .text("");
-//設定畫圖區域
-var svg = d3.select(".chartSvg")
-        .attr("pointer-events", "all")
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
 var dataArr;
+//window.addEventListener("resize", draw)
 loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/data.json", "date");
+//document.addEventListener("DOMContentLoaded", resize);
+//d3.select(window).on('resize', resize);
+window.addEventListener('resize', resize );
+var drawData;
+var drawVolumeData;
+ // Add a clipPath: everything out of this area won't be drawn.
+var clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
+    
+var candlestickClip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "candlestickClip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height - 60 )
+      .attr("x", 0)
+      .attr("y", 0);
 
 function loadJSON(file, type) {
     svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
@@ -166,36 +193,29 @@ function loadJSON(file, type) {
             .style("text-anchor", "end")
             .text("Price (TWD)");
     // Data to display initially
-    draw(data.slice(0, data.length), newData);
-        
+    drawData = data.slice(0, data.length);
+    drawVolumeData = newData    
+//    draw(data.slice(0, data.length), newData);
+    draw()
+   
 });
 }
 
 
-function draw(data, volumeData) {
+function draw() {
     // 設定domain，決定各座標所用到的資料
+    var data = drawData;
+    var volumeData = drawVolumeData;
+    var bounds = svg.node().getBoundingClientRect();
+//    width = bounds.width - margin.left - margin.right;
+//    height = bounds.height - margin.top - margin.bottom;
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     xScale.domain(volumeData.map(function(d){return d.date;}))
     yVolume.domain(techan.scale.plot.volume(data).domain());
 
     
-    // Add a clipPath: everything out of this area won't be drawn.
-    var clip = svg.append("defs").append("svg:clipPath")
-      .attr("id", "clip")
-      .append("svg:rect")
-      .attr("width", width )
-      .attr("height", height )
-      .attr("x", 0)
-      .attr("y", 0);
-    
-    var candlestickClip = svg.append("defs").append("svg:clipPath")
-      .attr("id", "candlestickClip")
-      .append("svg:rect")
-      .attr("width", width )
-      .attr("height", height - 60 )
-      .attr("x", 0)
-      .attr("y", 0);
+   
     
     xScale.range([0, width].map(d => d)); // 設定xScale回到初始值
     var chart = svg.selectAll("volumeBar") // 畫成交量bar chart
@@ -317,10 +337,44 @@ function redraw() {
         .attr("x", function(d) {return xScale(d.date);})
         .attr("width", (xScale.bandwidth()));
     
-    
-
 }
 
+
+function resize() {
+    width = parseInt(d3.select(".chartSvg").style('width'), 10);
+    width = width - margin.left - margin.right;
+
+    console.log("Resize width :" + width);
+    // K線圖的x
+    x.range([0, width]);
+    crosshairY.range([height, 0]);
+    // K線圖的y
+    y.range([height - 60, 0]);
+    // 成交量的y
+    yVolume.range([height , height - 60]);
+    //成交量的x
+    xScale.range([0, width]).padding(0.15);
+    candlestickClip.attr("width", width);
+    clip.attr("width", width);
+//    d3.select(svg.node().parentNode)
+//      .style('width', (width + margin.left + margin.right) + 'px');
+    
+    
+    svg.select("g.candlestick").call(candlestick);
+    svg.select("g.crosshair").attr("width", width).call(crosshair);
+    svg.select("g.sma.ma-0").call(sma0);
+    svg.select("g.sma.ma-1").call(sma1);
+    svg.select("g.ema.ma-2").call(ema2);
+
+//    svg.selectAll("g.volumeBar").remove();
+    svg.selectAll("rect.volumeBar")
+        .attr("x", function(d) {return xScale(d.date);})
+        .attr("width", (xScale.bandwidth()));
+    
+      svg.select("g.x.axis").call(xAxis);
+    svg.select("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
+    
+}
 
 
 
