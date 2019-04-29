@@ -25,7 +25,7 @@
     stroke: rgba(0,0,0,0.1);
 }
 
-.y.axis line {
+.y.axisRight line {
     fill: none;
     stroke: rgba(0,0,0,0.1);
 }

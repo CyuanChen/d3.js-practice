@@ -1,7 +1,7 @@
 
 // set the dimensions and margins of the graph
 var margin = {top: 30, right: 80, bottom: 30, left: 80},
-    width = 960 - margin.left - margin.right,
+    width = parseInt(d3.select(".chartSvg").style('width'), 10) - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // parse the date / time
@@ -68,8 +68,14 @@ var svgText = textSvg.append("g")
             .attr("dy", ".71em")
             .style("text-anchor", "start")
             .text("");
+
+var line = d3.line()
+        .x(function(d){return x(d.date)})
+        .y(function(d) {return yScale(d.price);})
+
 var theData = undefined;
 loadJSON("earn1102.json", "price1102.json");
+window.addEventListener('resize', resize );
 
 
 function draw(data, origindata) {
@@ -83,12 +89,8 @@ function draw(data, origindata) {
     var maxData = d3.max(data, function(d){return d.price}) / 10;
     yScale.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
 
-//    y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     y.domain([d3.min(data, function(d){return d.price - maxData;}), d3.max(data, function(d){ return d.price + maxData;})])
 
-    var line = d3.line()
-        .x(function(d){return x(d.date)})
-    .y(function(d) {return yScale(d.price);})
     console.log(data);
     svg.append("path")
         .datum(data)
@@ -96,11 +98,11 @@ function draw(data, origindata) {
         .attr("class", "line")
         .attr("stroke", "steelblue")
         .attr("stroke-width", 2.5)
-//        .attr("transform", "translate(" + (xScale.bandwidth() / 2) + ",0)")
         .attr("d", line);
     
     svg.append("g")
-    .call(yAxis.ticks(5));
+        .attr("class", "y axisLeft")
+        .call(yAxis.ticks(5));
     
     svg.append("g")
         .append("text")
@@ -142,19 +144,18 @@ function drawBar(data, priceData) {
       // Add the X Axis
       svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-//        .call(xAxis.ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
-    
-        .call(d3.axisBottom(x).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
+        .attr("transform", "translate(0," + height + ")")        .call(d3.axisBottom(x).ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
     
     // Add the Y2 Axis
     svg.append("g")
-        .attr("class", "y axis")
+        .attr("class", "y axisRight")
         .attr("transform", "translate(" + width + ",0)")
         .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
     svg.append("g")
         .attr("transform", "translate(" + (width + 40) + ",0)")
+        .attr("class", "y axisText")
         .append("text")
+        
         .attr("y", -10)
         .style("text-anchor", "end")
         .text("(百萬元)");
@@ -174,7 +175,7 @@ function drawBar2(data, priceData) {
     xScale.domain(data.map(function(d){return d.date;}));
     
     svg.append("g")
-        .attr("class", "x axis")
+        .attr("class", "x axisZero")
         .append("line")
         .attr("y1", y2(0))
         .attr("y2", y2(0))
@@ -183,23 +184,25 @@ function drawBar2(data, priceData) {
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+        .call(d3.axisBottom(x).ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
     
     
     // Add the Y2 Axis
     svg.append("g")
-        .attr("class", "y axis")
+        .attr("class", "y axisRight")
         .attr("transform", "translate(" + width + ",0)")
         .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
     
+    
     svg.append("g")
-        .attr("transform", "translate(" + (width + 20) + ",0)")
+        .attr("transform", "translate(" + (width + 40) + ",0)")
+        .attr("class", "y axisText")
         .append("text")
+        
         .attr("y", -10)
         .style("text-anchor", "end")
         .text("(%)");
     
-
     var chart = svg.selectAll("bar")
         .data(data)
         .enter().append("g");
@@ -219,6 +222,39 @@ function drawBar2(data, priceData) {
 
 }
    
+
+function resize() {
+    width = parseInt(d3.select(".chartSvg").style('width'), 10);
+    width = width - margin.left - margin.right;
+//    d3.select(".textSvg").attr("width", width)
+
+//    console.log("Resize width :" + width);
+    // K線圖的x
+    x.range([0, width]);
+    // K線圖的y
+    y.range([height - 60, 0]);
+    //成交量的x
+    xScale.range([0, width]);
+
+    svg.select("g.y.axisText")
+        .attr("transform", "translate(" + (width + 20) + ",0)");
+    svg.selectAll(".bar")
+        .attr("x", function(d){return x(d.date) - xScale.bandwidth() / 2;})
+        .attr("width", (xScale.bandwidth()));
+    svg.select("g.crosshair").attr("width", width).call(crosshair);
+    
+//    svg.select("g.candlestick").call(candlestick);
+      svg.selectAll(".line")
+        .attr("d", line);
+    
+//      svg.select("g.x.axis").call(xAxis);
+    svg.select("g.x.axis").call(xAxis.ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")));
+    svg.select("g.y.axisRight")
+        .attr("transform", "translate(" + width + ",0)")
+        .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
+    
+}
+
 
 
 function loadJSON(earnData, priceData) {
@@ -325,26 +361,17 @@ function loadRateJSON(earnData, priceData) {
     
  function move(coords, index) {    
     var i;
-//        console.log(coords.x)
-//        console.log("coord: " + coords.x + "date: " + priceDataArr[0].date);
     console.log()
-//        console.log(coords.x === monthEarnDataArr[0].date)
         for (i = 0; i < monthEarnDataArr.length; i ++) {
-//            console.log(monthEarnDataArr[i].date);
-            
             if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
-                console.log(coords.y);
+//                console.log(coords.y);
                 if (loadType == "monthRate") {
                     svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
                 } else {
                     svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
                 }
-                
-                
-                             
             }
         }
-
 }   
 
 

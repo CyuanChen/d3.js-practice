@@ -1,8 +1,7 @@
-var margin = {top: 20, right: 50, bottom: 30, left: 60};
+var margin = {top: 20, right: 20, bottom: 30, left: 60};
             
 var width = parseInt(d3.select(".chartSvg").style('width'), 10) - margin.left - margin.right
 var height = 500 - margin.top - margin.bottom;
-
 
 // 設定文字區域
 var textSvg = d3.select(".textSvg")
@@ -72,7 +71,7 @@ var yAxis = d3.axisLeft()
 
 var volumeAxis = d3.axisLeft(yVolume)
         .ticks(4)
-        .tickFormat(d3.format(",.3s"));
+        .tickFormat(d3.format(",.2s"));
 var ohlcAnnotation = techan.plot.axisannotation()
         .axis(yAxis)
         .orient('left')
@@ -117,6 +116,13 @@ var candlestickClip = svg.append("defs").append("svg:clipPath")
       .attr("height", height - 60 )
       .attr("x", 0)
       .attr("y", 0);
+//var crosshairClip = svg.append("defs").append("svg:clipPath")
+//      .attr("id", "crosshairClip")
+//      .append("svg:rect")
+//      .attr("width", width + margin.left)
+//      .attr("height", height )
+//      .attr("x", 0)
+//      .attr("y", 0);
 
 function loadJSON(file, type) {
     svg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
@@ -153,7 +159,7 @@ function loadJSON(file, type) {
         
     }).sort(function(a, b) { return d3.ascending(accessor.d(a), accessor.d(b)); });
     
-    console.log(data);
+//    console.log(data);
     
     var newData = jsonData.map(function(d) {
         if (type == "date") {
@@ -201,14 +207,12 @@ function loadJSON(file, type) {
 });
 }
 
+console.log(width);
 
 function draw() {
     // 設定domain，決定各座標所用到的資料
     var data = drawData;
     var volumeData = drawVolumeData;
-    var bounds = svg.node().getBoundingClientRect();
-//    width = bounds.width - margin.left - margin.right;
-//    height = bounds.height - margin.top - margin.bottom;
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     xScale.domain(volumeData.map(function(d){return d.date;}))
@@ -243,7 +247,7 @@ function draw() {
     });
    
    // 畫X軸 
-    svg.selectAll("g.x.axis").call(xAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
+    svg.selectAll("g.x.axis").call(xAxis.ticks(width / 70).tickFormat(d3.timeFormat("%m/%d")).tickSize(-height, -height));
     
     //畫K線圖Y軸
     svg.selectAll("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
@@ -265,6 +269,7 @@ function draw() {
     // 畫十字線並對他設定zoom function
     svg.append("g")
     .attr("class", "crosshair")
+//    .attr("clip-path", "url(#crosshairClip)")
     .attr("width", width)
     .attr("height", height)
     .attr("pointer-events", "all")
@@ -343,6 +348,7 @@ function redraw() {
 function resize() {
     width = parseInt(d3.select(".chartSvg").style('width'), 10);
     width = width - margin.left - margin.right;
+//    d3.select(".textSvg").attr("width", width)
 
     console.log("Resize width :" + width);
     // K線圖的x
@@ -356,8 +362,8 @@ function resize() {
     xScale.range([0, width]).padding(0.15);
     candlestickClip.attr("width", width);
     clip.attr("width", width);
-//    d3.select(svg.node().parentNode)
-//      .style('width', (width + margin.left + margin.right) + 'px');
+//    crosshairClip.attr("width", width + margin.left)
+
     
     
     svg.select("g.candlestick").call(candlestick);
@@ -366,12 +372,12 @@ function resize() {
     svg.select("g.sma.ma-1").call(sma1);
     svg.select("g.ema.ma-2").call(ema2);
 
-//    svg.selectAll("g.volumeBar").remove();
     svg.selectAll("rect.volumeBar")
         .attr("x", function(d) {return xScale(d.date);})
         .attr("width", (xScale.bandwidth()));
     
-      svg.select("g.x.axis").call(xAxis);
+//      svg.select("g.x.axis").call(xAxis);
+    svg.select("g.x.axis").call(xAxis.ticks(width / 70));
     svg.select("g.y.axis").call(yAxis.ticks(10).tickSize(-width, -width));
     
 }

@@ -4,6 +4,7 @@
 }
 
 
+/*
 .line.PROM {
     stroke: red;
 }
@@ -16,6 +17,7 @@
 .line.OPM {
     stroke: green;
 }
+*/
 
 .dot.GPM {
     fill: steelblue;
@@ -33,14 +35,18 @@
     display: none;
 }
 
+
 /*
 .y.axis {
     stroke-dasharray: 1,1;
     stroke: #DDDDDD;
-}*/
+}
+*/
 
 /*
+
 .y.axis line {
     fill: none;
     stroke: rgba(0,0,0,0.1);
-}*/
+}
+*/

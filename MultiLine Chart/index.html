@@ -12,6 +12,12 @@
         <p>藍線: 毛利率</p>
         <p>綠線： 營業利益率</p>
         <p>紅線：  稅後純益率</p>
+        <button onclick="loadJSON('1102Data.json')">亞泥季財報</button>
+        <button onclick="loadJSON('2308Data.json')">台達電季財報</button>
+        <button onclick="loadJSON('3008Data.json')">大立光季財報</button>
+        <br>
+        <svg class="textSvg" width="100%" height="50"></svg>
+        <svg class="chartSvg" width="100%" height="300"></svg>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="techanjs.js"></script>
     <script type="text/javascript" src="app.js"></script>
