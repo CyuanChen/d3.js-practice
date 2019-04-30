@@ -4,7 +4,6 @@
 <html>
     <head>
         <link rel="stylesheet" href="candlestickStyle.css">
-        <link rel="stylesheet" href="monthlyRevenueStyle.css">
 
     </head>
     <body>
@@ -21,8 +20,8 @@
         <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/monthData2308.json', 'month')">台達電月線</button>
         <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/kData3008.json', 'date')">大立光日線</button>
         <button onclick="loadCandlestickJSON('https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/monthData3008.json', 'month')">大立光月線</button>
-        <svg class="candlestickTextSvg" width="960" height="50"></svg>
-        <svg class="candlestickChartSvg" width="960" height="500"></svg>
+        <svg class="candlestickTextSvg" width="100%" height="50"></svg>
+        <svg class="candlestickChartSvg" width="100%" height="500"></svg>
 
         <br>
 
@@ -35,8 +34,8 @@
         <button onclick='loadRateJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/earn3008.json", "https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/%E5%A4%9A%E6%8A%98%E7%B7%9A%E5%9C%96with%20json/price3008.json")'>大立光月營收年增率</button>
 
         <!-- 產生圖表的標籤   -->
-        <svg class="monthlyTextSvg" width="960" height="50"></svg>
-        <svg class="monthlyChartSvg" width="960" height="500"></svg>    
+        <svg class="monthlyTextSvg" width="100%" height="50"></svg>
+        <svg class="monthlyChartSvg" width="100%" height="500"></svg>    
     
         
         <script src="https://d3js.org/d3.v4.min.js"></script>

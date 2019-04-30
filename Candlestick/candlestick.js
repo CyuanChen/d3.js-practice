@@ -1,10 +1,11 @@
 var margin = {top: 20, right: 20, bottom: 30, left: 60};
             
-var width = parseInt(d3.select(".chartSvg").style('width'), 10) - margin.left - margin.right
+var width = parseInt(d3.select(".candlestickChartSvg").style('width'), 10) - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
+
 // 設定文字區域
-var textSvg = d3.select(".textSvg")
+var textSvg = d3.select(".candlestickTextSvg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
@@ -17,7 +18,7 @@ var svgText = textSvg.append("g")
             .style("text-anchor", "start")
             .text("");
 //設定畫圖區域
-var svg = d3.select(".chartSvg")
+var svg = d3.select(".candlestickChartSvg")
         .attr("pointer-events", "all")
         .attr("preserveAspectRatio", "xMinYMin meet")
         .append("g")
@@ -89,17 +90,14 @@ var crosshair = techan.plot.crosshair()
         .xAnnotation(timeAnnotation)
         .yAnnotation(ohlcAnnotation)
         .on("move", move);
-
-
-
 var dataArr;
-//window.addEventListener("resize", draw)
+
 loadJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/data.json", "date");
-//document.addEventListener("DOMContentLoaded", resize);
-//d3.select(window).on('resize', resize);
+
+
 window.addEventListener('resize', resize );
-var drawData;
-var drawVolumeData;
+
+
  // Add a clipPath: everything out of this area won't be drawn.
 var clip = svg.append("defs").append("svg:clipPath")
       .attr("id", "clip")
@@ -201,18 +199,15 @@ function loadJSON(file, type) {
     // Data to display initially
     drawData = data.slice(0, data.length);
     drawVolumeData = newData    
-//    draw(data.slice(0, data.length), newData);
-    draw()
+    draw(data.slice(0, data.length), newData);
    
 });
 }
 
 console.log(width);
 
-function draw() {
+function draw(data, volumeData) {
     // 設定domain，決定各座標所用到的資料
-    var data = drawData;
-    var volumeData = drawVolumeData;
     x.domain(data.map(candlestick.accessor().d));
     y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
     xScale.domain(volumeData.map(function(d){return d.date;}))
@@ -346,7 +341,7 @@ function redraw() {
 
 
 function resize() {
-    width = parseInt(d3.select(".chartSvg").style('width'), 10);
+    width = parseInt(d3.select(".candlestickChartSvg").style('width'), 10);
     width = width - margin.left - margin.right;
 //    d3.select(".textSvg").attr("width", width)
 

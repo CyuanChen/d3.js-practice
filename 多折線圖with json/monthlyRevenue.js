@@ -144,7 +144,9 @@ function drawBar(data, priceData) {
       // Add the X Axis
       svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")        .call(d3.axisBottom(x).ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
+        .attr("transform", "translate(0," + height + ")")      
+        
+        .call(d3.axisBottom(x).ticks(width / 50).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));    
     
     // Add the Y2 Axis
     svg.append("g")
@@ -184,7 +186,7 @@ function drawBar2(data, priceData) {
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+        .call(d3.axisBottom(x).ticks(width / 50).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
     
     
     // Add the Y2 Axis

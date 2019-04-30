@@ -1,6 +1,6 @@
 var margin = {top: 20, right: 50, bottom: 30, left: 60};
 
-var candlestickWidth = 960 - margin.left - margin.right;
+var candlestickWidth = parseInt(d3.select(".candlestickChartSvg").style('width'), 10) - margin.left - margin.right;
             
 var candlestickHeight = 500 - margin.top - margin.bottom;
 
@@ -88,6 +88,11 @@ var candlestickSvg = d3.select(".candlestickChartSvg")
         .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+window.addEventListener('resize', resize );
+
+ // Add a clipPath: everything out of this area won't be drawn.
+var clip, candlestickClip;
 
 
 var dataArr;
@@ -182,7 +187,7 @@ function drawCandlestick(data, volumeData) {
 
     
     // Add a clipPath: everything out of this area won't be drawn.
-    var clip = candlestickSvg.append("defs").append("candlestickSvg:clipPath")
+    clip = candlestickSvg.append("defs").append("candlestickSvg:clipPath")
       .attr("id", "clip")
       .append("candlestickSvg:rect")
       .attr("width", candlestickWidth )
@@ -190,7 +195,7 @@ function drawCandlestick(data, volumeData) {
       .attr("x", 0)
       .attr("y", 0);
     
-    var candlestickClip = candlestickSvg.append("defs").append("candlestickSvg:clipPath")
+    candlestickClip = candlestickSvg.append("defs").append("candlestickSvg:clipPath")
       .attr("id", "candlestickClip")
       .append("candlestickSvg:rect")
       .attr("width", candlestickWidth )
@@ -313,10 +318,39 @@ function redraw() {
 }
 
 
+function resize() {
+    candlestickWidth = parseInt(d3.select(".candlestickChartSvg").style('width'), 10);
+    candlestickWidth = candlestickWidth - margin.left - margin.right;
+//    d3.select(".textSvg").attr("width", width)
+
+    // console.log("Resize width :" + candlestickWidth);
+    // K線圖的x
+    candlestickX.range([0, candlestickWidth]);
+    crosshairY.range([candlestickHeight, 0]);
+    // K線圖的y
+    candlestickY.range([candlestickHeight - 60, 0]);
+    // 成交量的y
+    yVolume.range([candlestickHeight , candlestickHeight - 60]);
+    //成交量的x
+    candlestickXScale.range([0, candlestickWidth]).padding(0.15);
+    candlestickClip.attr("width", candlestickWidth);
+    clip.attr("width", candlestickWidth);
+//    crosshairClip.attr("width", width + margin.left)
+
     
+    
+    candlestickSvg.select("g.candlestick").call(candlestick);
+    candlestickSvg.select("g.crosshair").attr("width", candlestickWidth).call(crosshair);
+    candlestickSvg.select("g.sma.ma-0").call(sma0);
+    candlestickSvg.select("g.sma.ma-1").call(sma1);
+    candlestickSvg.select("g.ema.ma-2").call(ema2);
 
-
-
-
-
-
+    candlestickSvg.selectAll("rect.volumeBar")
+        .attr("x", function(d) {return candlestickXScale(d.date);})
+        .attr("width", (candlestickXScale.bandwidth()));
+    
+//      svg.select("g.x.axis").call(xAxis);
+    candlestickSvg.select("g.x.axis").call(candlestickXAxis.ticks(candlestickWidth / 70));
+    candlestickSvg.select("g.y.axis").call(candlestickYAxis.ticks(10).tickSize(-candlestickWidth, -candlestickWidth));
+    
+}
