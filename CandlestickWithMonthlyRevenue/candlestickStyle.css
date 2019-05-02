@@ -73,10 +73,17 @@ path.volume.equal {
     fill: none;
     stroke: rgba(0,0,0,0.1);
 }
-
+.x.axis.financialStatement line {
+    stroke: rgba(0,0,0,1);   
+}
 .y.axis line {
     fill: none;
     stroke: rgba(0,0,0,0.1);
+}
+
+.y.axis.financialStatement path {
+    /*display: none;*/
+    stroke-width: 0px;
 }
 
 .crosshair {
@@ -99,5 +106,19 @@ rect.pane {
     pointer-events: all;
 }
 
+.dot.GPM {
+    fill: steelblue;
+}
 
+.dot.OPM {
+    fill: green;
+}
+
+.dot.PROM {
+    fill: red;
+}
+
+.financialChartSvg.domain {
+    display: none;
+}
        

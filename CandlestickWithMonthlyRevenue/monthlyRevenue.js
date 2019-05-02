@@ -1,9 +1,9 @@
 
 
-// set the dimensions and margins of the graph
-var margin = {top: 30, right: 80, bottom: 30, left: 80},
-   width = parseInt(d3.select(".monthlyChartSvg").style('width'), 10) - margin.left - margin.right,
-   height = 500 - margin.top - margin.bottom;
+// set the dimensions and monthlyRevenueMargins of the graph
+var monthlyRevenueMargin = {top: 30, right: 80, bottom: 30, left: 80},
+   width = parseInt(d3.select(".monthlyChartSvg").style('width'), 10) - monthlyRevenueMargin.left - monthlyRevenueMargin.right,
+   height = 500 - monthlyRevenueMargin.top - monthlyRevenueMargin.bottom;
 
 // parse the date / time
 var parseTime = d3.timeParse("%Y%m");
@@ -51,16 +51,16 @@ var crosshair = techan.plot.crosshair()
        .on("move", move);
 var textSvg = d3.select(".monthlyTextSvg")
        .append("g")
-       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+       .attr("transform", "translate(" + monthlyRevenueMargin.left + "," + monthlyRevenueMargin.top + ")");
 
 // define the line
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
+// moves the 'group' element to the top left monthlyRevenueMargin
 var svg = d3.select(".monthlyChartSvg")
  .append("g")
    .attr("transform",
-         "translate(" + margin.left + "," + margin.top + ")");
+         "translate(" + monthlyRevenueMargin.left + "," + monthlyRevenueMargin.top + ")");
 
 var svgText = textSvg.append("g")
            .attr("class", "description")
@@ -149,7 +149,7 @@ function drawBar(data, priceData) {
    
      // Add the X Axis
      svg.append("g")
-       .attr("class", "x axis")
+       .attr("class", "x axis monthlyRevenue")
        .attr("transform", "translate(0," + height + ")")
 //        .call(xAxis.ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
    
@@ -157,7 +157,7 @@ function drawBar(data, priceData) {
    
    // Add the Y2 Axis
    svg.append("g")
-       .attr("class", "y axis")
+       .attr("class", "y axis monthlyRevenue")
        .attr("transform", "translate(" + width + ",0)")
        .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
    svg.append("g")
@@ -182,7 +182,7 @@ function drawBar2(data, priceData) {
    xScale.domain(data.map(function(d){return d.date;}));
    
    svg.append("g")
-       .attr("class", "x axis")
+       .attr("class", "x axis monthlyRevenue")
        .append("line")
        .attr("y1", y2(0))
        .attr("y2", y2(0))
@@ -191,7 +191,7 @@ function drawBar2(data, priceData) {
    svg.append("g")
        .attr("class", "x axis monthlyRevenue")
        .attr("transform", "translate(0," + height + ")")
-       .call(d3.axisBottom(x).ticks(20).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
+       .call(d3.axisBottom(x).ticks(width / 50).tickFormat(d3.timeFormat("%Y%m")).tickSize(-height, -height));
    
    
    // Add the Y2 Axis
@@ -231,7 +231,7 @@ function drawBar2(data, priceData) {
 
 function monthRevenueResize() {
     width = parseInt(d3.select(".monthlyChartSvg").style('width'), 10);
-    width = width - margin.left - margin.right;
+    width = width - monthlyRevenueMargin.left - monthlyRevenueMargin.right;
 //    d3.select(".textSvg").attr("width", width)
 
    console.log("Resize width :" + width);
@@ -254,8 +254,8 @@ function monthRevenueResize() {
         .attr("d", line);
     
 //      svg.select("g.x.axis").call(xAxis);
-    svg.select("g.x.axis.monthlyRevenue").call(xAxis.ticks(width / 70).tickFormat(d3.timeFormat("%Y%m")));
-    svg.select("g.y.axisRight.monthlyRevenue")
+    svg.select("g.x.axis.monthlyRevenue").call(xAxis.ticks(width / 50).tickFormat(d3.timeFormat("%Y%m")));
+    svg.select("g.y.axis.monthlyRevenue")
         .attr("transform", "translate(" + width + ",0)")
         .call(d3.axisRight(y2).ticks(5).tickSize(-width, -width));
     

@@ -3,8 +3,8 @@ var margin = {top: 30, right: 100, bottom: 80, left: 20},
     height = 300 - margin.top - margin.bottom;
 
 // 設定時間格式
-var parseDate = d3.timeParse("%Y%m%d");
-var monthDate = d3.timeParse("%Y%m");
+//var parseDate = d3.timeParse("%Y%m%d");
+//var monthDate = d3.timeParse("%Y%m");
 
 // 設定文字區域
 var textSvg = d3.select(".textSvg")
@@ -114,7 +114,8 @@ function draw(data) {
     .selectAll("text")
     .attr("transform", "translate(10,0)")
     
-    svg.attr("class", "y axis")
+    svg.append("g")
+            .attr("class", "y axis")
             .append("text")
             .attr("transform", "translate(" + (width + 20) + ",0)")
             .attr("x", 0)

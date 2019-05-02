@@ -63,7 +63,7 @@ var timeAnnotation = techan.plot.axisannotation()
         .translate([0, candlestickHeight]);
 
 // 設定十字線
-var crosshair = techan.plot.crosshair()
+var candlestickCrosshair = techan.plot.crosshair()
         .xScale(candlestickX)
         .yScale(crosshairY)
         .xAnnotation(timeAnnotation)
@@ -71,11 +71,11 @@ var crosshair = techan.plot.crosshair()
         .on("move", move);
 
 // 設定文字區域
-var textSvg = d3.select(".candlestickTextSvg")
+var candlestickTextSvg = d3.select(".candlestickTextSvg")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
-var svgText = textSvg.append("g")
+var candlestickSvgText = candlestickTextSvg.append("g")
             .attr("class", "description")
             .append("text")
 //            .attr("x", margin.left)
@@ -229,7 +229,7 @@ function drawCandlestick(data, volumeData) {
     });
    
    // 畫X軸 
-    candlestickSvg.selectAll("g.x.axis").call(candlestickXAxis.ticks(7).tickFormat(d3.timeFormat("%m/%d")).tickSize(-candlestickHeight, -candlestickHeight));
+    candlestickSvg.selectAll("g.x.axis").call(candlestickXAxis.ticks(candlestickWidth / 70).tickFormat(d3.timeFormat("%m/%d")).tickSize(-candlestickHeight, -candlestickHeight));
     
     //畫K線圖Y軸
     candlestickSvg.selectAll("g.y.axis").call(candlestickYAxis.ticks(10).tickSize(-candlestickWidth, -candlestickWidth));
@@ -250,11 +250,11 @@ function drawCandlestick(data, volumeData) {
     
     // 畫十字線並對他設定zoom function
     candlestickSvg.append("g")
-    .attr("class", "crosshair")
+    .attr("class", "crosshair candlestick")
     .attr("width", candlestickWidth)
     .attr("height", candlestickHeight)
     .attr("pointer-events", "all")
-    .call(crosshair)
+    .call(candlestickCrosshair)
     .call(zoom);
 
     
@@ -270,7 +270,7 @@ function move(coords, index) {
     var i;
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
-            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
+            candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
 
         }
     }
@@ -340,7 +340,7 @@ function resize() {
     
     
     candlestickSvg.select("g.candlestick").call(candlestick);
-    candlestickSvg.select("g.crosshair").attr("width", candlestickWidth).call(crosshair);
+    candlestickSvg.select("g.crosshair.candlestick").attr("width", candlestickWidth).call(crosshair);
     candlestickSvg.select("g.sma.ma-0").call(sma0);
     candlestickSvg.select("g.sma.ma-1").call(sma1);
     candlestickSvg.select("g.ema.ma-2").call(ema2);
