@@ -1,4 +1,4 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 60};
+var margin = {top: 20, right: 20, bottom: 30, left: 70};
             
 var width = parseInt(d3.select(".candlestickChartSvg").style('width'), 10) - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
@@ -99,21 +99,7 @@ window.addEventListener('resize', resize );
 
 
  // Add a clipPath: everything out of this area won't be drawn.
-var clip = svg.append("defs").append("svg:clipPath")
-      .attr("id", "clip")
-      .append("svg:rect")
-      .attr("width", width )
-      .attr("height", height )
-      .attr("x", 0)
-      .attr("y", 0);
-    
-var candlestickClip = svg.append("defs").append("svg:clipPath")
-      .attr("id", "candlestickClip")
-      .append("svg:rect")
-      .attr("width", width )
-      .attr("height", height - 60 )
-      .attr("x", 0)
-      .attr("y", 0);
+var clip, candlestickClip;
 //var crosshairClip = svg.append("defs").append("svg:clipPath")
 //      .attr("id", "crosshairClip")
 //      .append("svg:rect")
@@ -192,10 +178,25 @@ function loadJSON(file, type) {
             .attr("class", "y axis")
             .append("text")
 //            .attr("transform", "rotate(-90)")
-//            .attr("x", )
+            .attr("x", 10)
             .attr("y", -10)
             .style("text-anchor", "end")
             .text("Price (TWD)");
+        
+    clip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "clip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height )
+      .attr("x", 0)
+      .attr("y", 0);
+    candlestickClip = svg.append("defs").append("svg:clipPath")
+      .attr("id", "candlestickClip")
+      .append("svg:rect")
+      .attr("width", width )
+      .attr("height", height - 60 )
+      .attr("x", 0)
+      .attr("y", 0);
     // Data to display initially
     drawData = data.slice(0, data.length);
     drawVolumeData = newData    

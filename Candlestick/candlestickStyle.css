@@ -81,8 +81,15 @@ rect.pane {
     pointer-events: all;
 }
 
+/*
+body {
+    font: 13px sans-serif;
+}
+*/
 
-
+text {
+    fill: #000;
+}
 
 
 

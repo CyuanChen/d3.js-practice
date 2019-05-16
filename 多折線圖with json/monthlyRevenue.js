@@ -1,6 +1,6 @@
 
 // set the dimensions and margins of the graph
-var margin = {top: 30, right: 80, bottom: 30, left: 80},
+var margin = {top: 30, right: 40, bottom: 30, left: 40},
     width = parseInt(d3.select(".chartSvg").style('width'), 10) - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -74,7 +74,8 @@ var line = d3.line()
         .y(function(d) {return yScale(d.price);})
 
 var theData = undefined;
-loadJSON("earn1102.json", "price1102.json");
+//loadJSON("earn1102.json", "price1102.json");
+loadJSON("https://cors-anywhere.herokuapp.com/https://gist.githubusercontent.com/CyuanChen/95b04feecc4fb6eed498643d04c89103/raw/087daf9ec80f91ceeae25a1bff09dda69096f019/1301DataEarn.json", "https://cors-anywhere.herokuapp.com/https://gist.githubusercontent.com/CyuanChen/293d826cf840f8afbd98e40a3b93d55a/raw/c5b63faac6d9fa61c8b2df6fda3c2f7df2093a81/1301DataPrice.json");
 window.addEventListener('resize', resize );
 
 
@@ -106,9 +107,9 @@ function draw(data, origindata) {
     
     svg.append("g")
         .append("text")
-        .attr("x", 30)
+        .attr("x", 20)
         .attr("y", -10)
-        .style("text-anchor", "end")
+        .style("text-anchor", "middle")
         .text("Price (TWD)");
    
     svg.append("g")

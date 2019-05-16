@@ -1,18 +1,22 @@
-var financialStatementMargin = {top: 30, right: 100, bottom: 80, left: 20},
-    financialStatementWidth = parseInt(d3.select(".financialChartSvg").style('width'), 10) - financialStatementMargin.left - financialStatementMargin.right,
+var financialStatementMargin = {top: 30, right: 50, bottom: 80, left: 20},
+    financialStatementWidth = parseInt(d3.select("#financialStatement").style('width'), 10) - financialStatementMargin.left - financialStatementMargin.right,
     financialStatementHeight = 300 - financialStatementMargin.top - financialStatementMargin.bottom;
 
-// // 設定時間格式
-// var financialStatementParseDate = d3.timeParse("%financialStatementY%m%d");
-// var financialStatementMonthDate = d3.timeParse("%financialStatementY%m");
-
 // 設定文字區域
-var financialStatementTextSvg = d3.select(".financialTextSvg")
+var financialStatementTextSvg = d3.select("#financialStatement")
+        .append("svg")
+        .attr("class", "financialStatementTextSvg")
+        .attr("width", financialStatementWidth + financialStatementMargin.left + financialStatementMargin.right)
+        .attr("height", 100)
         .append("g")
         .attr("transform", "translate(" + financialStatementMargin.left + "," + financialStatementMargin.top + ")");
 
 //設定畫圖區域
-var financialStatementSvg = d3.select(".financialChartSvg")
+var financialStatementSvg = d3.select("#financialStatement")
+        .append("svg")
+        .attr("class", "financialStatementChartSvg")
+        .attr("width", financialStatementWidth + financialStatementMargin.left + financialStatementMargin.right)
+        .attr("height", 300)
         .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + financialStatementMargin.left + "," + financialStatementMargin.top + ")");
@@ -182,7 +186,7 @@ function financialStatementDraw(data) {
         .enter().append("g")
         .attr("class", "lineLegend")
         .attr("transform", function(d, i) {
-            return "translate(" + (financialStatementMargin.left + i*150) + "," + (0) + ")";
+            return "translate(" + (0) + "," + (i*25) + ")";
         })
     lineLegend.append("text")
         .text(function(d) { return d;})
@@ -198,10 +202,13 @@ function financialStatementDraw(data) {
 
 
 function financialStatementResize() {
-    financialStatementWidth = parseInt(d3.select(".financialChartSvg").style('width'), 10);
-    financialStatementWidth = financialStatementWidth - financialStatementMargin.left - financialStatementMargin.right;
+    var originFinancialStatementWidth = parseInt(d3.select("#financialStatement").style('width'), 10);
+    financialStatementWidth = originFinancialStatementWidth - financialStatementMargin.left - financialStatementMargin.right;
 //    d3.select(".textSvg").attr("financialStatementWidth", financialStatementWidth)
-
+    d3.select(".financialStatementTextSvg").attr("width", originFinancialStatementWidth);
+    d3.select(".financialStatementChartSvg").attr("width", originFinancialStatementWidth);
+    // d3.select(".financialChartSvg").attr("width", originFinancialStatementWidth);
+    // d3.select(".financialStatementTextSvg").attr("width", originFinancialStatementWidth);
 //    console.log("Resize financialStatementWidth :" + financialStatementWidth);
     financialStatementX.range([0, financialStatementWidth]);
     financialStatementY.range([financialStatementHeight, 0]);

@@ -1,6 +1,6 @@
-var margin = {top: 20, right: 50, bottom: 30, left: 60};
+var margin = {top: 20, right: 35, bottom: 30, left: 46};
 
-var candlestickWidth = parseInt(d3.select(".candlestickChartSvg").style('width'), 10) - margin.left - margin.right;
+var candlestickWidth = parseInt(d3.select("#candlestick").style('width'), 10) - margin.left - margin.right;
             
 var candlestickHeight = 500 - margin.top - margin.bottom;
 
@@ -55,12 +55,13 @@ var volumeAxis = d3.axisLeft(yVolume)
 var ohlcAnnotation = techan.plot.axisannotation()
         .axis(candlestickYAxis)
         .orient('left')
-        .format(d3.format(',.2f'));
+        .format(d3.format(',.1f'));
 var timeAnnotation = techan.plot.axisannotation()
         .axis(candlestickXAxis)
         .orient('bottom')
         .format(d3.timeFormat('%Y-%m-%d'))
-        .translate([0, candlestickHeight]);
+        .translate([0, candlestickHeight])
+        .width(65);
 
 // 設定十字線
 var candlestickCrosshair = techan.plot.crosshair()
@@ -71,20 +72,53 @@ var candlestickCrosshair = techan.plot.crosshair()
         .on("move", move);
 
 // 設定文字區域
-var candlestickTextSvg = d3.select(".candlestickTextSvg")
+var candlestickTextSvg = d3.select("#candlestick")
+        .append("svg")
+        .attr("class", "candlestickTextSvg")
+        .attr("width", candlestickWidth + margin.left + margin.right)
+        .attr("height", 120)
         .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + 10 + "," + margin.top + ")");
+        
 //設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
-var candlestickSvgText = candlestickTextSvg.append("g")
-            .attr("class", "description")
+var candlestickSvgText = candlestickTextSvg
+            .append("g")
+            .attr("class", "candlestickSvgText")
             .append("text")
+            // .attr("class", "candlestickSvgText")
+//            .attr("x", margin.left)
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "start")
+            .text("");
+var candlestickSvgText2 = candlestickTextSvg
+            .append("g")
+            .attr("class", "candlestickSvgText2")
+            .attr("transform", "translate(0,25)")
+            .append("text")
+            // .attr("class", "candlestickSvgText2")
+//            .attr("x", margin.left)
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "start")
+            .text("");
+var candlestickSvgText3 = candlestickTextSvg
+            .append("g")
+            .attr("class", "candlestickSvgText3")
+            .attr("transform", "translate(0,50)")
+            .append("text")
+            // .attr("class", "candlestickSvgText3")
 //            .attr("x", margin.left)
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "start")
             .text("");
 //設定畫圖區域
-var candlestickSvg = d3.select(".candlestickChartSvg")
+var candlestickSvg = d3.select("#candlestick")
+        .append("svg")
+        .attr("class", "candlestickChartSvg")
+        .attr("width", candlestickWidth + margin.left + margin.right)
+        .attr("height", 500)
         .attr("pointer-events", "all")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -96,7 +130,7 @@ var clip, candlestickClip;
 
 
 var dataArr;
-loadCandlestickJSON("https://cors-anywhere.herokuapp.com/https://raw.githubusercontent.com/CyuanChen/d3.js-practice/master/Candlestick/data.json", "date");
+loadCandlestickJSON("https://cors-anywhere.herokuapp.com/https://gist.githubusercontent.com/CyuanChen/785b6404e22d798ffe390d1cd73b0ad5/raw/c5bbe2d3c50f34352833e78dccab99137e6239cb/2207Data.json", "date");
 
 function loadCandlestickJSON(file, type) {
     candlestickSvg.selectAll("*").remove(); // 切換不同資料需要重新畫圖，因此需要先清除原先的圖案
@@ -166,12 +200,21 @@ function loadCandlestickJSON(file, type) {
 
     candlestickSvg.append("g")
             .attr("class", "y axis")
+        .attr("class", "y axis")
             .append("text")
-//            .attr("transform", "rotate(-90)")
-//            .attr("x", )
+            //            .attr("transform", "rotate(-90)")
+            //            .attr("x", )
             .attr("y", -10)
-            .style("text-anchor", "end")
+            .style("text-anchor", "middle")
             .text("Price (TWD)");
+
+//    candlestickSvg.append("g")
+//       .append("text")
+//       .attr("x", 30)
+//       .attr("y", -10)
+//       .style("text-anchor", "end")
+//       .text("Price (TWD)");
+        
     // Data to display initially
     drawCandlestick(data.slice(0, data.length), newData);
         
@@ -185,6 +228,8 @@ function drawCandlestick(data, volumeData) {
     candlestickXScale.domain(volumeData.map(function(d){return d.date;}))
     yVolume.domain(techan.scale.plot.volume(data).domain());
 
+    
+    
     
     // Add a clipPath: everything out of this area won't be drawn.
     clip = candlestickSvg.append("defs").append("candlestickSvg:clipPath")
@@ -227,6 +272,7 @@ function drawCandlestick(data, volumeData) {
                return "#DDDDDD" 
             }            
     });
+
    
    // 畫X軸 
     candlestickSvg.selectAll("g.x.axis").call(candlestickXAxis.ticks(candlestickWidth / 70).tickFormat(d3.timeFormat("%m/%d")).tickSize(-candlestickHeight, -candlestickHeight));
@@ -256,7 +302,11 @@ function drawCandlestick(data, volumeData) {
     .attr("pointer-events", "all")
     .call(candlestickCrosshair)
     .call(zoom);
-
+    
+    
+    candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(dataArr[dataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0開盤：" + dataArr[dataArr.length - 1].open);
+    candlestickSvgText2.text("高：" + dataArr[dataArr.length - 1].high + "       \u00A0\u00A0\u00A0\u00A0低："+ dataArr[dataArr.length - 1].low + "\u00A0\u00A0\u00A0\u00A0收盤："+ dataArr[dataArr.length - 1].close);
+    candlestickSvgText3.text("漲跌：" + dataArr[dataArr.length - 1].change + "(" + dataArr[dataArr.length - 1].percentChange + "%)" + "\u2007\u2007成交量：" + dataArr[dataArr.length - 1].volume).call(wrap, candlestickWidth); 
     
     //設定zoom的初始值
     zoomableInit = candlestickX.zoomable().clamp(false).copy();
@@ -270,7 +320,9 @@ function move(coords, index) {
     var i;
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
-            candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
+            candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(dataArr[i].date) + "\u00A0\u00A0\u00A0\u00A0開盤：" + dataArr[i].open);
+            candlestickSvgText2.text("高：" + dataArr[i].high + "       \u00A0\u00A0\u00A0\u00A0低："+ dataArr[i].low + "\u00A0\u00A0\u00A0\u00A0收盤："+ dataArr[i].close);
+            candlestickSvgText3.text("漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + "\u2007\u2007成交量：" + dataArr[i].volume).call(wrap, candlestickWidth); 
 
         }
     }
@@ -319,9 +371,11 @@ function redraw() {
 
 
 function resize() {
-    candlestickWidth = parseInt(d3.select(".candlestickChartSvg").style('width'), 10);
-    candlestickWidth = candlestickWidth - margin.left - margin.right;
-//    d3.select(".textSvg").attr("width", width)
+    var originCandlestickWidth = parseInt(d3.select("#candlestick").style('width'), 10);
+    candlestickWidth = originCandlestickWidth - margin.left - margin.right;
+
+    d3.select(".candlestickChartSvg").attr("width", originCandlestickWidth);
+    d3.select(".candlestickTextSvg").attr("width", originCandlestickWidth);
 
     // console.log("Resize width :" + candlestickWidth);
     // K線圖的x
@@ -353,4 +407,29 @@ function resize() {
     candlestickSvg.select("g.x.axis").call(candlestickXAxis.ticks(candlestickWidth / 70));
     candlestickSvg.select("g.y.axis").call(candlestickYAxis.ticks(10).tickSize(-candlestickWidth, -candlestickWidth));
     
+}
+
+
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
 }

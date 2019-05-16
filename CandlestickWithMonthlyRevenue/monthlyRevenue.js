@@ -2,7 +2,7 @@
 
 // set the dimensions and monthlyRevenueMargins of the graph
 var monthlyRevenueMargin = {top: 30, right: 80, bottom: 30, left: 80},
-   width = parseInt(d3.select(".monthlyChartSvg").style('width'), 10) - monthlyRevenueMargin.left - monthlyRevenueMargin.right,
+   width = parseInt(d3.select("#monthlyRevenue").style('width'), 10) - monthlyRevenueMargin.left - monthlyRevenueMargin.right,
    height = 500 - monthlyRevenueMargin.top - monthlyRevenueMargin.bottom;
 
 // parse the date / time
@@ -49,27 +49,43 @@ var crosshair = techan.plot.crosshair()
 //        .xAnnotation(timeAnnotation)
 //        .yAnnotation(ohlcAnnotation)
        .on("move", move);
-var textSvg = d3.select(".monthlyTextSvg")
-       .append("g")
-       .attr("transform", "translate(" + monthlyRevenueMargin.left + "," + monthlyRevenueMargin.top + ")");
+var textSvg = d3.select("#monthlyRevenue")
+        .append("svg")
+        .attr("class", "monthlyTextSvg")
+        .attr("width", width + monthlyRevenueMargin.left + monthlyRevenueMargin.right)
+        .attr("height", 100)
+        .append("g")
+        .attr("transform", "translate(" + 10 + "," + monthlyRevenueMargin.top + ")");
 
 // define the line
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left monthlyRevenueMargin
-var svg = d3.select(".monthlyChartSvg")
- .append("g")
-   .attr("transform",
+
+var svg = d3.select("#monthlyRevenue")
+        .append("svg")
+        .attr("class", "monthlyChartSvg")
+        .attr("width", width + monthlyRevenueMargin.left + monthlyRevenueMargin.right)
+        .attr("height", 500)
+        .append("g")
+        .attr("transform",
          "translate(" + monthlyRevenueMargin.left + "," + monthlyRevenueMargin.top + ")");
 
 var svgText = textSvg.append("g")
-           .attr("class", "description")
+           .attr("class", "monthText")
            .append("text")
            .attr("y", 6)
            .attr("dy", ".71em")
            .style("text-anchor", "start")
            .text("");
-
+var svgText2 = textSvg.append("g")
+           .attr("class", "monthText2")
+           .attr("transform", "translate(0,25)")
+           .append("text")
+           .attr("y", 6)
+           .attr("dy", ".71em")
+           .style("text-anchor", "start")
+           .text("");
 var line = d3.line()
         .x(function(d){return x(d.date)})
         .y(function(d) {return yScale(d.price);})
@@ -119,7 +135,15 @@ function draw(data, origindata) {
   
    svg.append("g")
        .attr("class", "crosshair")
-       .call(crosshair)
+       .call(crosshair);
+   if (loadType == "monthRate") {
+       svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price);
+       svgText2.text("月營收：" + monthEarnDataArr[monthEarnDataArr.length - 1].earn + " (百萬)"); 
+    } else {
+       svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
+       svgText2.text("月營收年增率：" + monthEarnDataArr[monthEarnDataArr.length - 1].revenue + "(%)"); 
+    }
+    
  }
    
 function drawBar(data, priceData) {
@@ -230,11 +254,14 @@ function drawBar2(data, priceData) {
 
 
 function monthRevenueResize() {
-    width = parseInt(d3.select(".monthlyChartSvg").style('width'), 10);
-    width = width - monthlyRevenueMargin.left - monthlyRevenueMargin.right;
+    var originWidth = parseInt(d3.select("#monthlyRevenue").style('width'), 10);
+    width = originWidth - monthlyRevenueMargin.left - monthlyRevenueMargin.right;
 //    d3.select(".textSvg").attr("width", width)
-
-   console.log("Resize width :" + width);
+    // svg.attr("width", width);
+    // textSvg.attr("width", width);
+    d3.select(".monthlyChartSvg").attr("width", originWidth);
+    d3.select(".monthlyTextSvg").attr("width", originWidth);
+   // console.log("Resize width :" + width);
     // K線圖的x
     x.range([0, width]);
     // K線圖的y
@@ -377,9 +404,11 @@ function move(coords, index) {
            if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
 //                console.log(coords.y);
                if (loadType == "monthRate") {
-                   svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
+                  svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[i].price);
+                  svgText2.text("月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
                } else {
-                   svgText.text(d3.timeFormat("%Y/%m")(coords.x) + " 股價：" + priceDataArr[i].price + " 月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
+                   svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
+                  svgText2.text("月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
                }
                
                

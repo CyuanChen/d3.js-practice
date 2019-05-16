@@ -38,7 +38,7 @@ var colors = ["steelblue", "green", "red"];
 var jsonArray = [];
 var lineData;
 
-loadJSON("2330Data.json")
+loadJSON("1102Data.json");
 
 window.addEventListener('resize', resize );
 
@@ -183,7 +183,8 @@ function draw(data) {
         .enter().append("g")
         .attr("class", "lineLegend")
         .attr("transform", function(d, i) {
-            return "translate(" + (margin.left + i*150) + "," + (0) + ")";
+//            return "translate(" + (margin.left + i*150) + "," + (0) + ")";
+            return "translate(" + margin.left + "," + i*25 + ")";
         })
     lineLegend.append("text")
         .text(function(d) { return d;})

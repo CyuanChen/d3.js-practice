@@ -1,6 +1,25 @@
+/*
+K線圖 
+text: price(TWD)的顏色
+#candlestick: K線圖描述文字的大小
+*/
+text {
+    fill: #000;
+}
+
+#candlestick {
+    font-size: 17 px;
+}
+/* 
+K線圖
+candle.up : 上漲的顏色（預設紅）
+candle.down:下跌的顏色(預設綠)
+
+*/
+
 
 path.candle {
-    stroke: #000000;
+    stroke: #FF0000;
 }
 
 path.candle.body {
@@ -16,7 +35,10 @@ path.candle.down {
     fill: #00AA00;
     stroke: #00AA00;
 }
-
+/* 
+K線圖成交量
+.up 上漲, .down 下跌, .equal 收平
+*/
 .volumeBar {
     opacity: 0.8;
     fill: #00AA00;
@@ -33,7 +55,10 @@ path.volume.down {
 path.volume.equal {
     fill: #FF0000;
 }
-
+/*
+K線圖
+ma-0 五日線, ma-1 十日線, ma-2 二十日線
+*/
 .ma-0 path.line {
     stroke: #1f77b4;
     fill: none;
@@ -50,9 +75,12 @@ path.volume.equal {
     stroke-width: 2;
 }
 
-.description {
-    font: 17px sans-serif;
-}
+
+/*
+月營收
+.line 股價
+.bar 月營收 & 年增率
+*/
 .line {
   fill: none;
   stroke: #ff0000;
@@ -68,24 +96,36 @@ path.volume.equal {
 .axis line {
     stroke: #000;
 }
+/*
+.x.axis line x軸格線(上下)
+.y.axis line y軸格線(左右)
 
+*/
 .x.axis line {
     fill: none;
-    stroke: rgba(0,0,0,0.1);
+    stroke: rgba(0,0,0,0.2);
 }
 .x.axis.financialStatement line {
     stroke: rgba(0,0,0,1);   
 }
 .y.axis line {
     fill: none;
-    stroke: rgba(0,0,0,0.1);
+    stroke: rgba(0,0,0,0.2);
+}
+
+.y.axis text {
+    font-size: 11px;
 }
 
 .y.axis.financialStatement path {
     /*display: none;*/
     stroke-width: 0px;
 }
-
+/*
+十字線（移動時出現的線）
+path.wire 十字線線的顏色以及線出現 ---的間隔
+.axisannotation path K線圖對到時間軸出現的當日時間背景框
+*/
 .crosshair {
     cursor: crosshair;
 }
@@ -100,12 +140,25 @@ path.volume.equal {
     fill: #DDDDDD;
 }
 
+.crosshair text {
+    font-size: 12px;
+}
+
+/*
 rect.pane {
     cursor: move;
     fill: none;
     pointer-events: all;
 }
+*/
 
+/*
+季財報
+.dot 點
+GPM 毛利率
+OPM 營業利益率
+PROM 稅後純益率
+*/
 .dot.GPM {
     fill: steelblue;
 }
@@ -121,4 +174,32 @@ rect.pane {
 .financialChartSvg.domain {
     display: none;
 }
+
+
+
+/*
+button.d3 {
+    margin-left: 50px;
+}
+*/
+
+.candlestickSvgText {
+
+}
+
+.candlestickSvgText2 {
+
+}
+.candlestickSvgText3 {
+
+}
+
+.monthText {
+
+}
+
+.monthText2 {
+    
+}
+
        
