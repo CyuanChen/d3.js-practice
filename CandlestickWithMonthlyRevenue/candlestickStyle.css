@@ -1,14 +1,9 @@
 /*
 K線圖 
 text: price(TWD)的顏色
-#candlestick: K線圖描述文字的大小
 */
 text {
     fill: #000;
-}
-
-#candlestick {
-    font-size: 17 px;
 }
 /* 
 K線圖
@@ -158,6 +153,9 @@ rect.pane {
 GPM 毛利率
 OPM 營業利益率
 PROM 稅後純益率
+要改線的顏色請到financialStatement.js 的第41行
+var colors = ["steelblue", "green", "red"];
+改
 */
 .dot.GPM {
     fill: steelblue;
@@ -183,23 +181,46 @@ button.d3 {
 }
 */
 
-.candlestickSvgText {
+
+#candlestick {
+    font-size: 13px;
+}
+#monthlyRevenue {
+    font-size: 13px;
+}
+/* K線圖文字   */
+#candlestickDate {
 
 }
-
-.candlestickSvgText2 {
-
-}
-.candlestickSvgText3 {
-
-}
-
-.monthText {
-
-}
-
-.monthText2 {
+#start {
     
 }
+#high {
+
+}
+#low {
+
+}
+#close {
+
+}
+#valueChange {
+
+}
+#volumnCount {
+
+}
+/* 月營收文字  */
+
+#monthlyRevenueDate {
+
+}
+#stock {
+
+}
+
+#monthlyRevenueText {
+
+}                                                          .candlestickSvg
 
        

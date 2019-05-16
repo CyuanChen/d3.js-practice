@@ -72,47 +72,89 @@ var candlestickCrosshair = techan.plot.crosshair()
         .on("move", move);
 
 // 設定文字區域
-var candlestickTextSvg = d3.select("#candlestick")
-        .append("svg")
-        .attr("class", "candlestickTextSvg")
-        .attr("width", candlestickWidth + margin.left + margin.right)
-        .attr("height", 120)
-        .append("g")
+// var candlestickTextSvg = d3.select("#candlestick")
+//         .append("svg")
+//         .attr("class", "candlestickTextSvg")
+//         .attr("width", candlestickWidth + margin.left + margin.right)
+//         .attr("height", 120)
+//         .append("g")
+//         .attr("transform", "translate(" + 10 + "," + margin.top + ")");
+var candlestickDiv = d3.select("#candlestick")
+        .append("div")
         .attr("transform", "translate(" + 10 + "," + margin.top + ")");
-        
 //設定顯示文字，web版滑鼠拖曳就會顯示，App上則是要點擊才會顯示
-var candlestickSvgText = candlestickTextSvg
-            .append("g")
-            .attr("class", "candlestickSvgText")
-            .append("text")
-            // .attr("class", "candlestickSvgText")
-//            .attr("x", margin.left)
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "start")
-            .text("");
-var candlestickSvgText2 = candlestickTextSvg
-            .append("g")
-            .attr("class", "candlestickSvgText2")
-            .attr("transform", "translate(0,25)")
-            .append("text")
-            // .attr("class", "candlestickSvgText2")
-//            .attr("x", margin.left)
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "start")
-            .text("");
-var candlestickSvgText3 = candlestickTextSvg
-            .append("g")
-            .attr("class", "candlestickSvgText3")
-            .attr("transform", "translate(0,50)")
-            .append("text")
-            // .attr("class", "candlestickSvgText3")
-//            .attr("x", margin.left)
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "start")
-            .text("");
+//var candlestickSvgText = candlestickTextSvg
+//            .append("text")
+//             .attr("class", "candlestickSvgText")
+////            .attr("x", margin.left)
+//var candlestickSvgText2 = candlestickTextSvg
+//            .append("text")
+//            .attr("transform", "translate(0,25)")
+//             .attr("class", "candlestickSvgText2")
+////            .attr("x", margin.left)
+//var candlestickSvgText3 = candlestickTextSvg
+//            .append("text")
+//            .attr("transform", "translate(0,50)")
+//            .attr("class", "candlestickSvgText3")
+////            .attr("x", margin.left)
+
+
+var candlestickDate = candlestickDiv.append("div")
+    .attr("id", "candlestickDate")
+    .append("i").text("2019/05/14")
+
+var start = candlestickDiv.append("div")
+    .attr("id", "start")
+    .append("p").text("開盤：")
+var startValue = candlestickDiv.select("#start")
+    .append("u")
+var high = candlestickDiv.append("div")
+    .attr("id", "high")
+    // .attr("transform", "translate(0,25)")
+    .append("p").text("高：")
+var highValue = candlestickDiv.select("#high")
+    .append("u")
+var low = candlestickDiv.append("div")
+    .attr("id", "low")
+    // .attr("transform", "translate(0,25)")
+    .append("p").text("低：")
+var lowValue = candlestickDiv.select("#low")
+    .append("u")
+var close = candlestickDiv.append("div")
+    .attr("id", "close")
+    // .attr("transform", "translate(0,25)")
+    .append("p").text("收：")
+var closeValue = candlestickDiv.select("#close")
+    .append("u")
+
+var valueChange = candlestickDiv.append("div")
+    .attr("id", "valueChange")
+    // .attr("transform", "translate(0,50)")
+    .append("p").text("漲跌：")
+var valueChangeValue = candlestickDiv.select("#valueChange")
+    .append("u")
+var volumeCount = candlestickDiv.append("div")
+    .attr("id", "volumeCount")
+    // .attr("transform", "translate(0,50)")
+    .append("p").text("成交量：");
+
+var volumeCountValue = candlestickDiv.select("#volumeCount")
+    .append("u");
+
+
+
+// var candlestickSvgText2 = candlestickTextSvg
+//             .append("text")
+//             .attr("transform", "translate(0,25)")
+//              .attr("class", "candlestickSvgText2")
+// //            .attr("x", margin.left)
+// var candlestickSvgText3 = candlestickTextSvg
+//             .append("text")
+//             .attr("transform", "translate(0,50)")
+//             .attr("class", "candlestickSvgText3")
+// //            .attr("x", margin.left)
+
+
 //設定畫圖區域
 var candlestickSvg = d3.select("#candlestick")
         .append("svg")
@@ -303,11 +345,15 @@ function drawCandlestick(data, volumeData) {
     .call(candlestickCrosshair)
     .call(zoom);
     
-    
-    candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(dataArr[dataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0開盤：" + dataArr[dataArr.length - 1].open);
-    candlestickSvgText2.text("高：" + dataArr[dataArr.length - 1].high + "       \u00A0\u00A0\u00A0\u00A0低："+ dataArr[dataArr.length - 1].low + "\u00A0\u00A0\u00A0\u00A0收盤："+ dataArr[dataArr.length - 1].close);
-    candlestickSvgText3.text("漲跌：" + dataArr[dataArr.length - 1].change + "(" + dataArr[dataArr.length - 1].percentChange + "%)" + "\u2007\u2007成交量：" + dataArr[dataArr.length - 1].volume).call(wrap, candlestickWidth); 
-    
+
+    candlestickDate.text(d3.timeFormat("%Y/%m/%d")(dataArr[dataArr.length - 1].date));
+    startValue.text(dataArr[dataArr.length - 1].open);
+    highValue.text(dataArr[dataArr.length - 1].high);
+    lowValue.text(dataArr[dataArr.length - 1].low);
+    closeValue.text(dataArr[dataArr.length - 1].close);
+    valueChangeValue.text(dataArr[dataArr.length - 1].change);
+    volumeCountValue.text(dataArr[dataArr.length - 1].volume);
+
     //設定zoom的初始值
     zoomableInit = candlestickX.zoomable().clamp(false).copy();
     yInit = candlestickY.copy();
@@ -319,12 +365,15 @@ function move(coords, index) {
 //    console.log("move");
     var i;
     for (i = 0; i < dataArr.length; i ++) {
-        if (coords.x === dataArr[i].date) {
-            candlestickSvgText.text(d3.timeFormat("%Y/%m/%d")(dataArr[i].date) + "\u00A0\u00A0\u00A0\u00A0開盤：" + dataArr[i].open);
-            candlestickSvgText2.text("高：" + dataArr[i].high + "       \u00A0\u00A0\u00A0\u00A0低："+ dataArr[i].low + "\u00A0\u00A0\u00A0\u00A0收盤："+ dataArr[i].close);
-            candlestickSvgText3.text("漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + "\u2007\u2007成交量：" + dataArr[i].volume).call(wrap, candlestickWidth); 
-
-        }
+       if (coords.x === dataArr[i].date) {
+            candlestickDate.text(d3.timeFormat("%Y/%m/%d")(dataArr[i].date));
+            startValue.text(dataArr[i].open);
+            highValue.text(dataArr[i].high);
+            lowValue.text(dataArr[i].low);
+            closeValue.text(dataArr[i].close);
+            valueChangeValue.text(dataArr[i].change);
+            volumeCountValue.text(dataArr[i].volume);
+       }
     }
 }
 

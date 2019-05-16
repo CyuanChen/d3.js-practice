@@ -48,14 +48,26 @@ var crosshair = techan.plot.crosshair()
        .yScale(y)
 //        .xAnnotation(timeAnnotation)
 //        .yAnnotation(ohlcAnnotation)
-       .on("move", move);
-var textSvg = d3.select("#monthlyRevenue")
-        .append("svg")
-        .attr("class", "monthlyTextSvg")
-        .attr("width", width + monthlyRevenueMargin.left + monthlyRevenueMargin.right)
-        .attr("height", 100)
-        .append("g")
+       .on("move", monthlyMove);
+
+
+var monthlyRevenueDiv = d3.select("#monthlyRevenue")
+        .append("div")
         .attr("transform", "translate(" + 10 + "," + monthlyRevenueMargin.top + ")");
+var monthlyRevenueDate = monthlyRevenueDiv.append("div")
+    .attr("id", "monthlyRevenueDate")
+    .append("i").text("2019/05/14")
+
+var stock = monthlyRevenueDiv.append("div")
+    .attr("id", "stock")
+    .append("p").text("股價：")
+var stockValue = monthlyRevenueDiv.select("#stock")
+    .append("u")
+var monthlyRevenueText = monthlyRevenueDiv.append("div")
+    .attr("id", "monthlyRevenueText")
+    .append("p").text("高：")
+var monthlyRevenueTextValue = monthlyRevenueDiv.select("#monthlyRevenueText")
+    .append("u")
 
 // define the line
 // append the svg obgect to the body of the page
@@ -71,21 +83,23 @@ var svg = d3.select("#monthlyRevenue")
         .attr("transform",
          "translate(" + monthlyRevenueMargin.left + "," + monthlyRevenueMargin.top + ")");
 
-var svgText = textSvg.append("g")
-           .attr("class", "monthText")
-           .append("text")
-           .attr("y", 6)
-           .attr("dy", ".71em")
-           .style("text-anchor", "start")
-           .text("");
-var svgText2 = textSvg.append("g")
-           .attr("class", "monthText2")
-           .attr("transform", "translate(0,25)")
-           .append("text")
-           .attr("y", 6)
-           .attr("dy", ".71em")
-           .style("text-anchor", "start")
-           .text("");
+
+
+// var svgText = textSvg.append("g")
+//            .attr("class", "monthText")
+//            .append("text")
+//            .attr("y", 6)
+//            .attr("dy", ".71em")
+//            .style("text-anchor", "start")
+//            .text("");
+// var svgText2 = textSvg.append("g")
+//            .attr("class", "monthText2")
+//            .attr("transform", "translate(0,25)")
+//            .append("text")
+//            .attr("y", 6)
+//            .attr("dy", ".71em")
+//            .style("text-anchor", "start")
+//            .text("");
 var line = d3.line()
         .x(function(d){return x(d.date)})
         .y(function(d) {return yScale(d.price);})
@@ -137,11 +151,15 @@ function draw(data, origindata) {
        .attr("class", "crosshair")
        .call(crosshair);
    if (loadType == "monthRate") {
-       svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price);
-       svgText2.text("月營收：" + monthEarnDataArr[monthEarnDataArr.length - 1].earn + " (百萬)"); 
+       monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date));
+       stockValue.text(priceDataArr[priceDataArr.length - 1].price);
+       monthlyRevenueTextValue.text(monthEarnDataArr[monthEarnDataArr.length - 1].earn + " (百萬)");
     } else {
-       svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
-       svgText2.text("月營收年增率：" + monthEarnDataArr[monthEarnDataArr.length - 1].revenue + "(%)"); 
+       // svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
+       // svgText2.text("月營收年增率：" + ); 
+       monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date));
+       stockValue.text(priceDataArr[priceDataArr.length - 1].price);
+       monthlyRevenueTextValue.text(monthEarnDataArr[monthEarnDataArr.length - 1].revenue + "(%)");
     }
     
  }
@@ -392,23 +410,26 @@ function loadRateJSON(earnData, priceData) {
 
 }
    
-function move(coords, index) {    
+function monthlyMove(coords, index) {    
    var i;
-//        console.log(coords.x)
-//        console.log("coord: " + coords.x + "date: " + priceDataArr[0].date);
    console.log()
-//        console.log(coords.x === monthEarnDataArr[0].date)
        for (i = 0; i < monthEarnDataArr.length; i ++) {
 //            console.log(monthEarnDataArr[i].date);
            
            if ((d3.timeFormat("%Y/%m/%d")(coords.x) === d3.timeFormat("%Y/%m/%d")(priceDataArr[i].date))) {
-//                console.log(coords.y);
                if (loadType == "monthRate") {
-                  svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[i].price);
-                  svgText2.text("月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
+                  // svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[i].price);
+                  // svgText2.text("月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
+                  monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
+                  stockValue.text(priceDataArr[i].price); 
+                  monthlyRevenueTextValue.text(monthEarnDataArr[i].earn + " (百萬)");
                } else {
-                   svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
-                  svgText2.text("月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
+                  //  svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
+                  // svgText2.text("月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
+
+                 monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
+                 stockValue.text(priceDataArr[i].price);
+                 monthlyRevenueTextValue.text(monthEarnDataArr[i].revenue + "(%)");
                }
                
                
