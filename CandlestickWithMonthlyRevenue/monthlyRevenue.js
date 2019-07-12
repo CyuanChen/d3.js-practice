@@ -65,7 +65,7 @@ var stockValue = monthlyRevenueDiv.select("#stock")
     .append("u")
 var monthlyRevenueText = monthlyRevenueDiv.append("div")
     .attr("id", "monthlyRevenueText")
-    .append("p").text("高：")
+    .append("p").text("月營收：")
 var monthlyRevenueTextValue = monthlyRevenueDiv.select("#monthlyRevenueText")
     .append("u")
 
@@ -151,12 +151,14 @@ function draw(data, origindata) {
        .attr("class", "crosshair")
        .call(crosshair);
    if (loadType == "monthRate") {
-       monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date));
-       stockValue.text(priceDataArr[priceDataArr.length - 1].price);
-       monthlyRevenueTextValue.text(monthEarnDataArr[monthEarnDataArr.length - 1].earn + " (百萬)");
+        monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date));
+        stockValue.text(priceDataArr[priceDataArr.length - 1].price);
+        monthlyRevenueText.text("月營收：");
+        monthlyRevenueTextValue.text(monthEarnDataArr[monthEarnDataArr.length - 1].earn + " (百萬)");
     } else {
        // svgText.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
-       // svgText2.text("月營收年增率：" + ); 
+       // svgText2.text("月營收年增率：" + );
+        monthlyRevenueText.text("月營收年增率：");
        monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[priceDataArr.length - 1].date));
        stockValue.text(priceDataArr[priceDataArr.length - 1].price);
        monthlyRevenueTextValue.text(monthEarnDataArr[monthEarnDataArr.length - 1].revenue + "(%)");
@@ -420,16 +422,17 @@ function monthlyMove(coords, index) {
                if (loadType == "monthRate") {
                   // svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[i].price);
                   // svgText2.text("月營收：" + monthEarnDataArr[i].earn + " (百萬)"); 
-                  monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
-                  stockValue.text(priceDataArr[i].price); 
-                  monthlyRevenueTextValue.text(monthEarnDataArr[i].earn + " (百萬)");
+                monthlyRevenueText.text("月營收：");
+                monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
+                stockValue.text(priceDataArr[i].price); 
+                monthlyRevenueTextValue.text(monthEarnDataArr[i].earn + " (百萬)");
                } else {
                   //  svgText.text(d3.timeFormat("%Y/%m")(coords.x) + "\u00A0\u00A0\u00A0\u00A0股價：" + priceDataArr[priceDataArr.length - 1].price); 
                   // svgText2.text("月營收年增率：" + monthEarnDataArr[i].revenue + "(%)"); 
-
-                 monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
-                 stockValue.text(priceDataArr[i].price);
-                 monthlyRevenueTextValue.text(monthEarnDataArr[i].revenue + "(%)");
+                monthlyRevenueText.text("月營收年增率：");
+                monthlyRevenueDate.text(d3.timeFormat("%Y/%m")(priceDataArr[i].date));
+                stockValue.text(priceDataArr[i].price);
+                monthlyRevenueTextValue.text(monthEarnDataArr[i].revenue + "(%)");
                }
                
                

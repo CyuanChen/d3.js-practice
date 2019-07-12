@@ -224,7 +224,7 @@ function financialStatementResize() {
         .attr("cx", function(d) {return financialStatementX(d.season);})
         .attr("cy", function(d) {return financialStatementY(d.value);})
     
-    financialStatementSvg.select("g.x.axis.financialStatement").call(financialStatementXAxis.ticks(financialStatementWidth / 70))
+    financialStatementSvg.select("g.x.axis.financialStatement").call(financialStatementXAxis.ticks(financialStatementWidth / 50))
         .selectAll("text")
         .attr("transform", "translate(0, 10)");
     financialStatementSvg.select("g.y.axis.financialStatement").call(financialStatementYAxis.ticks(6).tickSize(financialStatementWidth));

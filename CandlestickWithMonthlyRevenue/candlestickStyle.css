@@ -1,16 +1,16 @@
 /*
-K線圖 
-text: price(TWD)的顏色
-*/
+ K線圖
+ text: price(TWD)的顏色
+ */
 text {
     fill: #000;
 }
-/* 
-K線圖
-candle.up : 上漲的顏色（預設紅）
-candle.down:下跌的顏色(預設綠)
-
-*/
+/*
+ K線圖
+ candle.up : 上漲的顏色（預設紅）
+ candle.down:下跌的顏色(預設綠)
+ 
+ */
 
 
 path.candle {
@@ -30,10 +30,10 @@ path.candle.down {
     fill: #00AA00;
     stroke: #00AA00;
 }
-/* 
-K線圖成交量
-.up 上漲, .down 下跌, .equal 收平
-*/
+/*
+ K線圖成交量
+ .up 上漲, .down 下跌, .equal 收平
+ */
 .volumeBar {
     opacity: 0.8;
     fill: #00AA00;
@@ -51,9 +51,9 @@ path.volume.equal {
     fill: #FF0000;
 }
 /*
-K線圖
-ma-0 五日線, ma-1 十日線, ma-2 二十日線
-*/
+ K線圖
+ ma-0 五日線, ma-1 十日線, ma-2 二十日線
+ */
 .ma-0 path.line {
     stroke: #1f77b4;
     fill: none;
@@ -72,36 +72,36 @@ ma-0 五日線, ma-1 十日線, ma-2 二十日線
 
 
 /*
-月營收
-.line 股價
-.bar 月營收 & 年增率
-*/
+ 月營收
+ .line 股價
+ .bar 月營收 & 年增率
+ */
 .line {
-  fill: none;
-  stroke: #ff0000;
-  stroke-width: 2px;
+    fill: none;
+    stroke: #ff0000;
+    stroke-width: 2px;
 }
-    
+
 .bar {
     border: 1px solid #0b3536;
     border-radius: 6px;
-    fill: rgba(0,108,184, 0.8);  
+    fill: rgba(0,108,184, 0.8);
 }
 
 .axis line {
     stroke: #000;
 }
 /*
-.x.axis line x軸格線(上下)
-.y.axis line y軸格線(左右)
-
-*/
+ .x.axis line x軸格線(上下)
+ .y.axis line y軸格線(左右)
+ 
+ */
 .x.axis line {
     fill: none;
     stroke: rgba(0,0,0,0.2);
 }
 .x.axis.financialStatement line {
-    stroke: rgba(0,0,0,1);   
+    stroke: rgba(0,0,0,1);
 }
 .y.axis line {
     fill: none;
@@ -117,10 +117,10 @@ ma-0 五日線, ma-1 十日線, ma-2 二十日線
     stroke-width: 0px;
 }
 /*
-十字線（移動時出現的線）
-path.wire 十字線線的顏色以及線出現 ---的間隔
-.axisannotation path K線圖對到時間軸出現的當日時間背景框
-*/
+ 十字線（移動時出現的線）
+ path.wire 十字線線的顏色以及線出現 ---的間隔
+ .axisannotation path K線圖對到時間軸出現的當日時間背景框
+ */
 .crosshair {
     cursor: crosshair;
 }
@@ -140,23 +140,23 @@ path.wire 十字線線的顏色以及線出現 ---的間隔
 }
 
 /*
-rect.pane {
-    cursor: move;
-    fill: none;
-    pointer-events: all;
-}
-*/
+ rect.pane {
+ cursor: move;
+ fill: none;
+ pointer-events: all;
+ }
+ */
 
 /*
-季財報
-.dot 點
-GPM 毛利率
-OPM 營業利益率
-PROM 稅後純益率
-要改線的顏色請到financialStatement.js 的第41行
-var colors = ["steelblue", "green", "red"];
-改
-*/
+ 季財報
+ .dot 點
+ GPM 毛利率
+ OPM 營業利益率
+ PROM 稅後純益率
+ 要改線的顏色請到financialStatement.js 的第41行
+ var colors = ["steelblue", "green", "red"];
+ 改
+ */
 .dot.GPM {
     fill: steelblue;
 }
@@ -173,54 +173,109 @@ var colors = ["steelblue", "green", "red"];
     display: none;
 }
 
-
+.financialStatementTextSvg {
+    margin-left: -20px;
+}
 
 /*
-button.d3 {
-    margin-left: 50px;
+ button.d3 {
+ margin-left: 50px;
+ }
+ */
+/*20190520*/button {
+    border: 1px solid #E4001c;
+    background: #fff;
+    border-radius: 2px;
+    padding: 5px 10px;
+    margin: 0 3px 5px 5px;
+    color: #E4001c;
 }
-*/
 
 
-#candlestick {
+#candlestick, #monthlyRevenue {
     font-size: 13px;
+    
+    /*20190520*/
+    margin-top: 10px;
 }
 #monthlyRevenue {
     font-size: 13px;
 }
 /* K線圖文字   */
-#candlestickDate {
-
+#candlestickDate i, #monthlyRevenueDate i{
+    font-style: normal;
+    color: #828282;
+}
+#start, #high, #low, #close, #valueChange, #volumeCount, #stock, #monthlyRevenueText {
+    display: inline-block;
+    width: 60px;
+    margin-bottom: 20px;
+    vertical-align: top;
+}
+#monthlyRevenueText {width: 100px;}
+#start p, #high p, #low p, #close p, #valueChange p, #volumeCount p, #stock p, #monthlyRevenueText p {
+    margin-bottom: 5px;
+    color: #828282;
+    font-size: 13px;
+}
+#start u, #high u, #low u, #close u, #valueChange u, #volumeCount u, #stock u, #monthlyRevenueText u {
+    font-size: 13px;
+    text-decoration: none;
+    color: #0073c3;
+    line-height: 120%;
 }
 #start {
     
 }
 #high {
-
+    
 }
 #low {
-
+    
 }
 #close {
-
+    
 }
 #valueChange {
-
+    
 }
 #volumnCount {
-
+    
 }
 /* 月營收文字  */
 
 #monthlyRevenueDate {
-
+    
 }
 #stock {
-
+    
 }
 
 #monthlyRevenueText {
+    
+}
+.candlestickSvg {
+    
+}
 
-}                                                          .candlestickSvg
+.lineLegend {font-size: 14px;}
 
-       
+@media screen and (max-width: 390px) {
+    #start, #high, #low, #close, #valueChange, #volumeCount, #stock, #monthlyRevenueText {
+        width: 55px;
+    }
+    #monthlyRevenueText {width: 90px;}
+}
+@media screen and (max-width: 360px) {
+    #start, #high, #low, #close, #valueChange, #volumeCount, #stock, #monthlyRevenueText {
+        width: 47px;
+    }
+    #monthlyRevenueText {width: 85px;}
+    #start p, #high p, #low p, #close p, #valueChange p, #volumeCount p, #stock p, #monthlyRevenueText p {
+        font-size: 11px;
+    }
+    #start u, #high u, #low u, #close u, #valueChange u, #volumeCount u, #stock u, #monthlyRevenueText u {
+        font-size: 15px;
+    }
+    
+}
